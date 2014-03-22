@@ -7,7 +7,7 @@ import System.Environment
 import Text.ParserCombinators.Parsec
 
 import Data.Quantities.Data (SimpleUnit(..), Quantity(..), baseQuant,
-                             multiplyQuants, divideQuants, expQuants)
+                             multiplyQuants, divideQuants, exptQuants)
 
 main :: IO ()
 main = do
@@ -62,8 +62,14 @@ mulOp = try parseTimes <|> try parseDiv <|> parseImplicitTimes <?> "mulOp"
   where parseTimes         = char '*' >> spaces' >> return multiplyQuants
         parseDiv           = char '/' >> spaces' >> return divideQuants
         parseImplicitTimes = return multiplyQuants
-expOp = try (opChoice >> spaces' >> return expQuants) <?> "expOp"
+expOp = try (opChoice >> spaces' >> return exptQuants') <?> "expOp"
   where opChoice = string "^" <|> string "**"
+
+
+exptQuants' :: Quantity -> Quantity -> Quantity
+exptQuants' q (Quantity y [] _) = exptQuants q y
+exptQuants' a b  = error $ "Used non-dimensionless exponent in " ++ showq
+  where showq = unwords ["(", show a, ") ** (", show b, ")"]
 
 parseSymbol :: Parser Quantity
 parseSymbol = try parseNum <|> parseSymbol'

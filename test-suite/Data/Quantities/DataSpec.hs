@@ -49,5 +49,4 @@ spec = do
     describe "expQuants" $ do
       it "exponentiate quantity" $ do
         let mm4 = mm2 { power = 4 }
-            powQuant = baseQuant 2 []
-        expQuants mm2quant powQuant `shouldBe` baseQuant 16 [mm4]
+        exptQuants mm2quant 2 `shouldBe` baseQuant 16 [mm4]

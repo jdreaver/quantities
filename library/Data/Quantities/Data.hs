@@ -83,11 +83,10 @@ divideQuants x y = Quantity mag newUnits (defs x)
   where mag      = magnitude x / magnitude y
         newUnits = reduceUnits (units x ++ invertUnits (units y))
 
--- | expt for Quantities. Can only use with nondimensional exponent.
-expQuants :: Quantity -> Quantity -> Quantity
-expQuants (Quantity x u d) (Quantity y [] _) = Quantity (x**y) (expUnits u) d
+-- | expt for Quantities.
+exptQuants :: Quantity -> Double -> Quantity
+exptQuants (Quantity x u d) y = Quantity (x**y) (expUnits u) d
   where expUnits = map (\(SimpleUnit s pr p) -> SimpleUnit s pr (p*y))
-expQuants _ _ = error "Used dimensional quantity as exponent."
 
 
 data Definition = PrefixDefinition { defPrefix   :: Symbol
