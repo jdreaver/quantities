@@ -4,6 +4,8 @@ import Quantities (quantities)
 import Test.Hspec
 import Test.Hspec.QuickCheck
 
+{-# ANN module "HLint: ignore Redundant do" #-}
+
 spec :: Spec
 spec = do
     describe "quantities" $ do
