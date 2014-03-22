@@ -1,6 +1,6 @@
-module QuantitiesSpec (spec) where
+module Data.QuantitiesSpec (spec) where
 
-import Quantities (quantities)
+import Data.Quantities (quantities)
 import Test.Hspec
 import Test.Hspec.QuickCheck
 

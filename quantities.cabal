@@ -9,7 +9,7 @@ synopsis: Unit conversion and manipulation library.
 
 library
     default-language: Haskell2010
-    exposed-modules:  Quantities
+    exposed-modules:  Data.Quantities
     hs-source-dirs:   library
     ghc-options:      -Wall -O2 -threaded -fno-warn-unused-do-bind -fno-warn-name-shadowing -fno-warn-orphans -rtsopts "-with-rtsopts=-N"
     build-depends:    base
@@ -19,7 +19,7 @@ test-suite hspec
     default-language: Haskell2010
     ghc-options:      -fhpc
     hs-source-dirs:   test-suite library
-    other-modules:    Quantities, QuantitiesSpec
+    other-modules:    Data.Quantities, Data.QuantitiesSpec
     main-is:          Spec.hs
     type:             exitcode-stdio-1.0
 
