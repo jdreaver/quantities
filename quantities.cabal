@@ -1,40 +1,27 @@
-name:          quantities
-version:       0.0.0
-build-type:    Simple
-cabal-version: >= 1.18
-copyright: 2014 John David Reaver
-license: MIT
-synopsis: Unit conversion and manipulation library.
+name:                 quantities
+version:              0.1.0
+Author:               John David Reaver <jdreaver@adlerhorst.com>
+Maintainer:           John David Reaver <jdreaver@adlerhorst.com>
+build-type:           Simple
+cabal-version:        >= 1.18
+copyright:            2014 John David Reaver
+license:              MIT
+description:          Unit conversion and manipulation library.
 
 
 library
     default-language: Haskell2010
     exposed-modules:  Data.Quantities
     hs-source-dirs:   library
-    ghc-options:      -Wall -O2 -threaded -fno-warn-unused-do-bind -fno-warn-name-shadowing -fno-warn-orphans -rtsopts "-with-rtsopts=-N"
-    build-depends:    base
+    ghc-options:      -Wall -O2
+    build-depends:    base, containers
 
 test-suite hspec
-    build-depends:    base, quantities, hspec == 1.8.*
+    build-depends:    base, quantities, hspec == 1.8.*, containers
     default-language: Haskell2010
-    ghc-options:      -fhpc
+    ghc-options:      -Wall
     hs-source-dirs:   test-suite library
-    other-modules:    Data.Quantities, Data.QuantitiesSpec
     main-is:          Spec.hs
-    type:             exitcode-stdio-1.0
-
-test-suite haddock
-    build-depends:    base, process == 1.1.*, regex-compat == 0.95.*
-    default-language: Haskell2010
-    hs-source-dirs:   test-suite
-    main-is:          Haddock.hs
-    type:             exitcode-stdio-1.0
-
-test-suite hpc
-    build-depends:    base, process == 1.1.*, regex-compat == 0.95.*
-    default-language: Haskell2010
-    hs-source-dirs:   test-suite
-    main-is:          HPC.hs
     type:             exitcode-stdio-1.0
 
 test-suite hlint
