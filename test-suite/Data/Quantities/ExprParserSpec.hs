@@ -18,42 +18,35 @@ spec = do
         parseExprQuant "1e3"  `shouldBe` makeRightQuant 1e3  []
         parseExprQuant "-1e3"  `shouldBe` makeRightQuant (-1e3)  []
 
-    describe "readExpr" $ do
       it "parses addition" $ do
         parseExprQuant "1+1"  `shouldBe` makeRightQuant 1  []
 
-    describe "readExpr" $ do
       it "parses units" $ do
         let m = SimpleUnit "m" "" 1
         parseExprQuant "m"  `shouldBe` makeRightQuant 1 [m]
         parseExprQuant "-m"  `shouldBe` makeRightQuant (-1) [m]
 
-    describe "readExpr" $ do
       it "parses multiple units" $ do
         let m = SimpleUnit "m" "" 1
             s = SimpleUnit "s" "" 1
         parseExprQuant "m*s"  `shouldBe` makeRightQuant 1 [m, s]
 
-    describe "readExpr" $ do
       it "parses division" $ do
         let m = SimpleUnit "m" "" 1
             s = SimpleUnit "s" "" 1
         parseExprQuant "m/s"  `shouldBe` makeRightQuant 1 [m, s { power = -1 }]
 
-    describe "readExpr" $ do
       it "parses implicit multiplication" $ do
         let ft = SimpleUnit "ft" "" 1
             sec = SimpleUnit "sec" "" 1
         parseExprQuant "ft sec"  `shouldBe` makeRightQuant 1 [ft, sec]
         parseExprQuant "(ft) -sec"  `shouldBe` makeRightQuant (-1) [ft, sec]
 
-    describe "readExpr" $ do
       it "parses exponentiation" $ do
         let m2 = SimpleUnit "m" "" 2
         parseExprQuant "m^2"  `shouldBe` makeRightQuant 1 [m2]
         parseExprQuant "m**2"  `shouldBe` makeRightQuant 1 [m2]
 
-    describe "readExpr" $ do
       it "parses complex expressions" $ do
         let m = SimpleUnit "m" "" 1
             ft = SimpleUnit "ft" "" 1
