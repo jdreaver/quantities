@@ -1,4 +1,7 @@
 -- | Parse expressions with numbers and units.
+--
+-- This module provides a basic expression grammar that parses numbers
+-- and units.
 module Data.Quantities.ExprParser  where
 
 import Control.Applicative ((<*>), (<$>), (*>), (<*))
