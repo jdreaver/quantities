@@ -43,7 +43,7 @@ addDefinition (UnitDefinition sym q syns) = do
 
 -- Convert prefixes and synonyms
 preprocessQuantity :: Definitions -> Quantity -> Quantity
-preprocessQuantity d (Quantity x us _) = baseQuant x (map (preprocessUnit d) us)
+preprocessQuantity d (Quantity x us _) = Quantity x (map (preprocessUnit d) us) d
 
 preprocessUnit :: Definitions -> SimpleUnit -> SimpleUnit
 preprocessUnit d (SimpleUnit s _ p) = SimpleUnit ns np p
