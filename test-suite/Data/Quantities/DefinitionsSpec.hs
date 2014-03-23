@@ -3,7 +3,7 @@ module Data.Quantities.DefinitionsSpec (spec) where
 import qualified Data.Map as M
 
 import Data.Quantities.Data (Definition(..), Definitions(..), SimpleUnit(..),
-                             Quantity(..), baseQuant)
+                             baseQuant)
 import Data.Quantities.Definitions
 import Test.Hspec
 
