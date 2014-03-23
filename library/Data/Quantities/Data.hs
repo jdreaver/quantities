@@ -1,7 +1,7 @@
 -- | Base module for all data structures.
 module Data.Quantities.Data where
 
-import Data.List (sort)
+import Data.List (partition, sort)
 import qualified Data.Map as M
 
 -- | String representation of a unit. Examples: "meter", "foot"
@@ -16,8 +16,12 @@ data SimpleUnit = SimpleUnit { symbol :: String
 
 instance Show SimpleUnit where
   show (SimpleUnit s pr p)
+    | p == 1    = pr ++ s
     | p > 0     = pr ++ s ++ " ** " ++ show p
+    | p == -1   = "/ " ++ pr ++ s
     | otherwise = "/ " ++ pr ++ s ++ " ** " ++ show (-p)
+
+
 
 -- | Collection of SimpleUnits. Represents combination of simple
 -- units.
@@ -34,21 +38,24 @@ magnitude = magnitude'
 units :: Quantity -> CompositeUnit
 units = units'
 
+instance Show Quantity where
+  show (Quantity m us _) = unwords $ show m : map show (showSort us)
+
+-- | Sort units but put negative units at end
+showSort :: CompositeUnit -> CompositeUnit
+showSort c = pos ++ neg
+  where (pos, neg) = partition (\q -> power q > 0) c
+
+instance Eq Quantity where
+  (Quantity m1 u1 _) == (Quantity m2 u2 _) = m1 == m2 && sort u1 == sort u2
+
+
 -- | Quantity without definitions.
 baseQuant :: Double -> CompositeUnit -> Quantity
 baseQuant m u = Quantity m u emptyDefinitions
 
 fromDefinitions :: Definitions -> Double -> CompositeUnit -> Quantity
 fromDefinitions d m u = Quantity m u d
-
-
--- Need to implement / and * between units. Also need custom sort to
--- put positive units in front of negative ones.
-instance Show Quantity where
-  show (Quantity m us _) = unwords $ show m : map show us
-
-instance Eq Quantity where
-  (Quantity m1 u1 _) == (Quantity m2 u2 _) = m1 == m2 && sort u1 == sort u2
 
 
 reduceUnits, reduceUnits', removeZeros :: CompositeUnit -> CompositeUnit
