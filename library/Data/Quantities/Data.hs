@@ -38,6 +38,9 @@ units = units'
 baseQuant :: Double -> CompositeUnit -> Quantity
 baseQuant m u = Quantity m u emptyDefinitions
 
+fromDefinitions :: Definitions -> Double -> CompositeUnit -> Quantity
+fromDefinitions d m u = Quantity m u d
+
 
 -- Need to implement / and * between units. Also need custom sort to
 -- put positive units in front of negative ones.
@@ -120,38 +123,14 @@ emptyDefinitions = Definitions { bases          = M.empty
                                , unitTypes      = M.empty }
 
 
--- defaultDefinitions :: Definitions
--- defaultDefinitions = Definitions {
---   bases          = M.fromList [("feet", "meter")
---                               ,("meter", "meter")
---                               ,("second", "second")
---                               ,("minute", "second")]
---   , conversions    = M.fromList [(("feet", "meter"), 0.3048)
---                                 ,(("meter", "meter"), 1)
---                                 ,(("meter", "feet"), 3.280839)
---                                 ,(("second", "minute"), 1/60)
---                                 ,(("second", "second"), 1)
---                                 ,(("minute", "second"), 60)]
---   , synonyms    = M.fromList [("ft", "feet")
---                              ,("feet", "feet")
---                              ,("meter", "meter")
---                              ,("m", "meter")
---                              ,("s", "second")
---                              ,("second", "second")
---                              ,("min", "minute")
---                              ,("minute", "minute")]
---   , unitsList      = ["ft", "feet", "m", "meter", "s", "min"]
---   , prefixes       = ["milli", "m", "centi", "c", "kilo", "k"]
---   , prefixValues   = M.fromList [("milli", 1e-3)
---                                 ,("centi", 1e-2)
---                                 ,("kilo",  1e3)
---                                 ,("", 1.0)]
---   , prefixSynonyms = M.fromList [("m", "milli")
---                                 ,("milli", "milli")
---                                 ,("c", "centi")
---                                 ,("centi", "centi")
---                                 ,("k", "kilo")
---                                 ,("kilo", "kilo")
---                                 ,("", "")]
---   , unitTypes      = M.fromList [("m", "[length]")
---                                 ,("s", "[time]")]}
+-- | Combine two Definitions structures
+unionDefinitions :: Definitions -> Definitions -> Definitions
+unionDefinitions d1 d2 = Definitions {
+  bases = bases d1 `M.union` bases d2
+  , conversions = conversions d1 `M.union` conversions d2
+  , synonyms = synonyms d1 `M.union` synonyms d2
+  , unitsList = unitsList d1 ++ unitsList d2
+  , prefixes = prefixes d1 ++ prefixes d2
+  , prefixValues = prefixValues d1 `M.union` prefixValues d2
+  , prefixSynonyms = prefixSynonyms d1 `M.union` prefixSynonyms d2
+  , unitTypes = unitTypes d1 `M.union` unitTypes d2 }

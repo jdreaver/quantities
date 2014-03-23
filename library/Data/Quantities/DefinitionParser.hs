@@ -27,16 +27,16 @@ readDefinitions' = many parseDef <* eof
 parseDef :: Parser Definition
 parseDef  = do
   _ <- spaces
-  skipMany comment
+  -- skipMany comment
   optional $ many $ char '\n'
   line <- try parseDefLine <|> try parseBaseLine <|> parsePrefixLine
   spaces
-  skipMany comment
+  -- skipMany comment
   optional $ many $ char '\n'
   return line
 
-comment :: Parser String
-comment = char '#' >> many (noneOf "\n")
+-- comment :: Parser String
+-- comment = char '#' >> many (noneOf "\n")
 
 eol :: Parser Char
 eol = char '\n'
@@ -54,7 +54,7 @@ parseUnitDef = do
   sym   <- many1 letter <* spaces <* char '='
   quant <- parseExpr
   spaces
-  skipMany comment
+  -- skipMany comment
   return $ UnitDefinition sym quant []
 
 parseSynonym :: Parser Symbol
@@ -74,7 +74,7 @@ parseBase = do
   sym <- many1 letter <* spaces <* char '='
   b <- spaces >> char '[' >> many1 letter <* char ']'
   spaces
-  skipMany comment
+  -- skipMany comment
   return (sym, b)
 
 -- | Parse line containing prefix definition
@@ -90,7 +90,7 @@ parsePrefix = do
   pre <- many1 letter <* char '-' <* spaces <* char '='
   fac <- spaces >> parseNum'
   spaces
-  skipMany comment
+  -- skipMany comment
   return (pre, fac)
 
 parsePrefixSynonym :: Parser Symbol
