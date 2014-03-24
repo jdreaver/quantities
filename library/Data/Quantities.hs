@@ -5,9 +5,13 @@ module Data.Quantities (units
                        ,divideQuants
                        ,exptQuants
                        ,parseQuant
+                       ,convert
+                       ,addQuants
+                       ,subtractQuants
                        ,Quantity) where
 
 
+import Data.Quantities.Convert (convert, addQuants, subtractQuants)
 import Data.Quantities.Data (units, magnitude, multiplyQuants, divideQuants,
                              exptQuants, Quantity)
 import Data.Quantities.Definitions (preprocessQuantity)

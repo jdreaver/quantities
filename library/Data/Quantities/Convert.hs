@@ -15,7 +15,13 @@ convert x u = Quantity mag u d
 -- | Like convert, but don't use quantity's definitions.
 convert' :: Definitions -> Quantity -> CompositeUnit -> Quantity
 convert' d x u = Quantity mag u d
-  where mag = magnitude x * (baseFactor d (units x) / baseFactor d u)
+  where mag = magnitude x * conversionFactor d u (units x)
+
+-- | Compute conversion factor between two units. When converting from
+-- u1 to u2, this is how much to multiply the value in u1 by to get to
+-- u2.
+conversionFactor :: Definitions -> CompositeUnit -> CompositeUnit -> Double
+conversionFactor d u1 u2 = baseFactor d u2 / baseFactor d u1
 
 -- | Factor to convert units to their base.
 baseFactor :: Definitions -> CompositeUnit -> Double
@@ -47,6 +53,17 @@ baseUnits :: Definitions -> CompositeUnit -> CompositeUnit
 baseUnits _ [] = []
 baseUnits d (SimpleUnit s _ p : xs) = SimpleUnit base "" p : baseUnits d xs
   where base = bases d M.! s
+
+
+-- | Adds two quantities.
+addQuants :: Quantity -> Quantity -> Quantity
+addQuants (Quantity m1 u1 d) (Quantity m2 u2 _) = Quantity mag u1 d
+  where mag = m1 + (m2 * conversionFactor d u2 u1)
+
+-- | Subtract two quantities.
+subtractQuants :: Quantity -> Quantity -> Quantity
+subtractQuants (Quantity m1 u1 d) (Quantity m2 u2 _) = Quantity mag u1 d
+  where mag = m1 - (m2 * conversionFactor d u2 u1)
 
 -- convertSymbol :: Definitions -> String -> String -> Double
 -- convertSymbol d from to = convertSymbolBase d from / convertSymbolBase d to
