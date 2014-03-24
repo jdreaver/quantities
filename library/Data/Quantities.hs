@@ -4,16 +4,19 @@ module Data.Quantities (units
                        ,multiplyQuants
                        ,divideQuants
                        ,exptQuants
-                       ,qString) where
+                       ,parseQuant
+                       ,Quantity) where
 
-import Data.Quantities.Data
-import Data.Quantities.Definitions
-import Data.Quantities.DefaultUnits
-import Data.Quantities.ExprParser
 
-qString :: String -> Either String Quantity
-qString s = ret
+import Data.Quantities.Data (units, magnitude, multiplyQuants, divideQuants,
+                             exptQuants, Quantity)
+import Data.Quantities.Definitions (preprocessQuantity)
+import Data.Quantities.DefaultUnits (defaultDefinitions)
+import Data.Quantities.ExprParser (parseExprQuant)
+
+parseQuant :: String -> Either String Quantity
+parseQuant s = ret
   where rawq = parseExprQuant s
-        ret = case rawq of
+        ret  = case rawq of
           (Left err) -> Left err
-          (Right q)  -> Right $ preprocessQuantity defaultDefinitions q
+          (Right q)  -> Right (preprocessQuantity defaultDefinitions q)

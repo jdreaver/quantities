@@ -15,6 +15,12 @@ library
     hs-source-dirs:   library
     ghc-options:      -Wall -O2
     build-depends:    base, containers, mtl, parsec
+    other-modules:    Data.Quantities.Convert
+                    , Data.Quantities.Data
+                    , Data.Quantities.DefaultUnits
+                    , Data.Quantities.Definitions
+                    , Data.Quantities.DefinitionParser
+                    , Data.Quantities.ExprParser
 
 test-suite hspec
     default-language: Haskell2010
