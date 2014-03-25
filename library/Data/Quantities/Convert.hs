@@ -8,14 +8,12 @@ import Data.Quantities.Data (Quantity(..), CompositeUnit, SimpleUnit(..), Defini
 
 -- | Convert quantity to given units.
 convert :: Quantity -> CompositeUnit -> Quantity
-convert x u = Quantity mag u d
-  where d = defs x
-        mag = magnitude x * (baseFactor d (units x) / baseFactor d u)
+convert x = convert' (defs x) x
 
 -- | Like convert, but don't use quantity's definitions.
 convert' :: Definitions -> Quantity -> CompositeUnit -> Quantity
 convert' d x u = Quantity mag u d
-  where mag = magnitude x * conversionFactor d u (units x)
+  where mag = magnitude x * conversionFactor d (units x) u
 
 -- | Compute conversion factor between two units. When converting from
 -- u1 to u2, this is how much to multiply the value in u1 by to get to

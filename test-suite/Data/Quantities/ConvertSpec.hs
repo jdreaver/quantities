@@ -16,7 +16,7 @@ spec = do
     describe "convertBase" $ do
       it "converts to base" $ do
         let q = defaultQuant 1 [SimpleUnit "foot" "" 1]
-        convertBase q `shouldBe` defaultQuant 3.280839 [SimpleUnit "meter" "" 1]
+        convertBase q `shouldBe` defaultQuant (1/3.280839) [SimpleUnit "meter" "" 1]
 
     describe "conversionFactor" $ do
       it "" $ do
