@@ -4,48 +4,52 @@ import Data.Quantities.Data (Definitions)
 import Data.Quantities.DefinitionParser (readDefinitions)
 import Data.Quantities.Definitions (makeDefinitions)
 
+-- These definitions are taken almost verbatim from the Pint unit
+-- conversion library for the Python programming language. Check them
+-- out at https://github.com/hgrecco/pint.
+
 defaultDefinitions :: Definitions
 defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
 
 -- decimal prefixes
   "yocto- = 1e-24 = y-"
-  -- ,"zepto- = 1e-21 = z-"
-  -- ,"atto- =  1e-18 = a-"
-  -- ,"femto- = 1e-15 = f-"
-  -- ,"pico- =  1e-12 = p-"
-  -- ,"nano- =  1e-9  = n-"
-  -- ,"micro- = 1e-6  = u-"
+  ,"zepto- = 1e-21 = z-"
+  ,"atto- =  1e-18 = a-"
+  ,"femto- = 1e-15 = f-"
+  ,"pico- =  1e-12 = p-"
+  ,"nano- =  1e-9  = n-"
+  ,"micro- = 1e-6  = u-"
   ,"milli- = 1e-3  = m-"
   ,"centi- = 1e-2  = c-"
-  -- ,"deci- =  1e-1  = d-"
-  -- ,"deca- =  1e+1  = da-"
-  -- ,"hecto- = 1e2   = h-"
+  ,"deci- =  1e-1  = d-"
+  ,"deca- =  1e+1  = da-"
+  ,"hecto- = 1e2   = h-"
   ,"kilo- =  1e3   = k-"
-  -- ,"mega- =  1e6   = M-"
-  -- ,"giga- =  1e9   = G-"
-  -- ,"tera- =  1e12  = T-"
-  -- ,"peta- =  1e15  = P-"
-  -- ,"exa- =   1e18  = E-"
-  -- ,"zetta- = 1e21  = Z-"
-  -- ,"yotta- = 1e24  = Y-"
+  ,"mega- =  1e6   = M-"
+  ,"giga- =  1e9   = G-"
+  ,"tera- =  1e12  = T-"
+  ,"peta- =  1e15  = P-"
+  ,"exa- =   1e18  = E-"
+  ,"zetta- = 1e21  = Z-"
+  ,"yotta- = 1e24  = Y-"
 
    -- binary_prefixes
-  -- ,"kibi- = 2**10 = Ki-"
-  -- ,"mebi- = 2**20 = Mi-"
-  -- ,"gibi- = 2**30 = Gi-"
-  -- ,"tebi- = 2**40 = Ti-"
-  -- ,"pebi- = 2**50 = Pi-"
-  -- ,"exbi- = 2**60 = Ei-"
-  -- ,"zebi- = 2**70 = Zi-"
-  -- ,"yobi- = 2**80 = Yi-"
+  ,"kibi- = 2**10 = Ki-"
+  ,"mebi- = 2**20 = Mi-"
+  ,"gibi- = 2**30 = Gi-"
+  ,"tebi- = 2**40 = Ti-"
+  ,"pebi- = 2**50 = Pi-"
+  ,"exbi- = 2**60 = Ei-"
+  ,"zebi- = 2**70 = Zi-"
+  ,"yobi- = 2**80 = Yi-"
 
    -- reference
   ,"meter = [length] = m = metre"
   ,"second = [time] = s = sec"
-  -- ,"ampere = [current] = A = amp"
-  -- ,"candela = [luminosity] = cd = candle"
-  -- ,"gram = [mass] = g"
-  -- ,"mole = [substance] = mol"
+  ,"ampere = [current] = A = amp"
+  ,"candela = [luminosity] = cd = candle"
+  ,"gram = [mass] = g"
+  ,"mole = [substance] = mol"
   --,"degK = [temperature]; offset: 0 = K = kelvin"
    --,"radian = [] = rad"
    --,"bit = []"
@@ -55,11 +59,11 @@ defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
    -- [acceleration] = [length] / [time] ** 2
 
    -- Angle
-   -- ,"turn = 2 * pi * radian = revolution = cycle = circle"
-   -- ,"degree = pi / 180 * radian = deg = arcdeg = arcdegree = angular_degree"
-   -- ,"arcminute = arcdeg / 60 = arcmin = arc_minute = angular_minute"
-   -- ,"arcsecond = arcmin / 60 =  arcsec = arc_second = angular_second"
-   -- ,"steradian = radian ** 2 = sr"
+   ,"turn = 2 * pi * radian = revolution = cycle = circle"
+   ,"degree = pi / 180 * radian = deg = arcdeg = arcdegree = angular_degree"
+   ,"arcminute = arcdeg / 60 = arcmin = arc_minute = angular_minute"
+   ,"arcsecond = arcmin / 60 =  arcsec = arc_second = angular_second"
+   ,"steradian = radian ** 2 = sr"
 
    -- Length
   --,"angstrom = 1e-10 * meter"
