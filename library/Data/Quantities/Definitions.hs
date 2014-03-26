@@ -1,6 +1,7 @@
 module Data.Quantities.Definitions where
 
 import Control.Monad.State
+import Data.Either (lefts, rights)
 import qualified Data.Map as M
 import qualified Text.ParserCombinators.Parsec as P
 
@@ -32,7 +33,7 @@ addDefinition (UnitDefinition sym q syns) = do
   -- prefixes are preprocessed. Then we do the standard Definitions
   -- modification like prefix and base definitions.
   d <- get
-  let pq = preprocessQuantity d q
+  let (Right pq) = preprocessQuantity d q
       (Quantity baseFac baseUnits _) = convertBase' d pq
       baseSym = symbol (head baseUnits)
   modify $ unionDefinitions emptyDefinitions {
@@ -42,11 +43,18 @@ addDefinition (UnitDefinition sym q syns) = do
     , unitsList   = sym : syns }
 
 -- Convert prefixes and synonyms
-preprocessQuantity :: Definitions -> Quantity -> Quantity
-preprocessQuantity d (Quantity x us _) = Quantity x (map (preprocessUnit d) us) d
+preprocessQuantity :: Definitions -> Quantity -> Either QuantityError Quantity
+preprocessQuantity d (Quantity x us _)
+  | null errors = Right $ Quantity x goodUnits d
+  | otherwise   = Left  $ head errors
+    where ppUnits   = map (preprocessUnit d) us
+          goodUnits = rights ppUnits
+          errors    = lefts ppUnits
 
-preprocessUnit :: Definitions -> SimpleUnit -> SimpleUnit
-preprocessUnit d (SimpleUnit s _ p) = SimpleUnit ns np p
+preprocessUnit :: Definitions -> SimpleUnit -> Either QuantityError SimpleUnit
+preprocessUnit d (SimpleUnit s _ p)
+  | rs `elem` unitsList d = Right $ SimpleUnit ns np p
+  | otherwise             = Left  $ UndefinedUnitError s
   where (rp, rs) = prefixParser d s
         np       = prefixSynonyms d M.! rp
         ns       = synonyms d M.! rs

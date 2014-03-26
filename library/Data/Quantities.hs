@@ -19,8 +19,10 @@ import Data.Quantities.DefaultUnits (defaultDefinitions)
 import Data.Quantities.ExprParser (parseExprQuant)
 
 parseQuant :: String -> Either String Quantity
-parseQuant s = ret
+parseQuant s =
+  case rawq of
+    (Left err) -> Left err
+    (Right q)  -> case preprocessQuantity defaultDefinitions q of
+      (Left err) -> Left $ show err
+      (Right q') -> Right q'
   where rawq = parseExprQuant s
-        ret  = case rawq of
-          (Left err) -> Left err
-          (Right q)  -> Right (preprocessQuantity defaultDefinitions q)

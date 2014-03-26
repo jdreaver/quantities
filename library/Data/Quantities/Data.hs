@@ -57,6 +57,11 @@ baseQuant m u = Quantity m u emptyDefinitions
 fromDefinitions :: Definitions -> Double -> CompositeUnit -> Quantity
 fromDefinitions d m u = Quantity m u d
 
+-- | Custom error type
+data QuantityError = UndefinedUnitError String
+                   | DimensionalityError CompositeUnit CompositeUnit
+                   deriving (Show)
+
 
 reduceUnits, reduceUnits', removeZeros :: CompositeUnit -> CompositeUnit
 -- | Combines equivalent units and removes units with powers of zero.

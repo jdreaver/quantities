@@ -1,5 +1,6 @@
 module Data.Quantities.DefinitionsSpec (spec) where
 
+import Data.Either (rights)
 import qualified Data.Map as M
 
 import Data.Quantities.Data (Definition(..), Definitions(..), SimpleUnit(..),
@@ -43,15 +44,27 @@ spec = do
         ppm2  = SimpleUnit "meter" "" 2
         mm2   = SimpleUnit "mm" "" 2
         ppmm2 = SimpleUnit "meter" "milli" 2
+        bad   = SimpleUnit "asdfdsaf" "" 2
 
     describe "preprocessUnit" $ do
       it "handles base" $ do
-        preprocessUnit baseDict m2 `shouldBe` ppm2
+        let (Right computed) = preprocessUnit baseDict m2
+        computed  `shouldBe` ppm2
 
       it "handles prefix" $ do
-        preprocessUnit allDict mm2 `shouldBe` ppmm2
+        let (Right computed) = preprocessUnit allDict mm2
+        computed `shouldBe` ppmm2
+
+      it "rejects bad unit" $ do
+        let ret = preprocessUnit allDict bad
+        isLeft ret `shouldBe` True
 
     let qm2 = baseQuant 3 [m2]
     describe "preprocessQuantity" $ do
       it "doesn't need own dict" $ do
-        preprocessQuantity allDict qm2 `shouldBe` baseQuant 3 [ppm2]
+        let (Right computed) = preprocessQuantity allDict qm2
+        computed  `shouldBe` baseQuant 3 [ppm2]
+
+
+isLeft :: Either a b -> Bool
+isLeft = null . rights . return
