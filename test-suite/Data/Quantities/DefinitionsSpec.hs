@@ -65,14 +65,24 @@ spec = do
         let (Right computed) = preprocessQuantity allDict qm2
         computed  `shouldBe` baseQuant 3 [ppm2]
 
-    let hectDef  = PrefixDefinition "hecto" 1e-3 ["h"]
-        hrDef = BaseDefinition "hour" "time" ["h", "hr"]
-        hectHrDict = makeDefinitions [hectDef, hrDef]
+
     describe "prefixParser" $ do
-      it "handles unit/prefix ambiguity" $ do
+      let hectDef    = PrefixDefinition "hecto" 1e-3 ["h"]
+          hrDef      = BaseDefinition "hour" "time" ["h", "hr"]
+          hectHrDict = makeDefinitions [hectDef, hrDef]
+      it "handles hecto/hr ambiguity" $ do
         let (pr, sym) = prefixParser hectHrDict "hr"
         pr `shouldBe` ""
         sym `shouldBe` "hr"
+
+      let milliDef    = PrefixDefinition "milli" 1e-3 ["m"]
+          inchDef     = BaseDefinition "inch" "length" ["in"]
+          minDef      = BaseDefinition "minute" "time" ["min"]
+          inchMinDict = makeDefinitions [milliDef, inchDef, minDef]
+      it "handles min/milliinch ambiguity" $ do
+        let (pr, sym) = prefixParser inchMinDict "min"
+        pr `shouldBe` ""
+        sym `shouldBe` "min"
 
 isLeft :: Either a b -> Bool
 isLeft = null . rights . return

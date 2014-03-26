@@ -8,19 +8,19 @@ defaultDefinitions :: Definitions
 defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
 
 -- decimal prefixes
-  -- "yocto- = 1e-24 = y-"
+  "yocto- = 1e-24 = y-"
   -- ,"zepto- = 1e-21 = z-"
   -- ,"atto- =  1e-18 = a-"
   -- ,"femto- = 1e-15 = f-"
   -- ,"pico- =  1e-12 = p-"
   -- ,"nano- =  1e-9  = n-"
   -- ,"micro- = 1e-6  = u-"
-  -- ,"milli- = 1e-3  = m-"
-  "centi- = 1e-2  = c-"
+  ,"milli- = 1e-3  = m-"
+  ,"centi- = 1e-2  = c-"
   -- ,"deci- =  1e-1  = d-"
   -- ,"deca- =  1e+1  = da-"
   -- ,"hecto- = 1e2   = h-"
-  -- ,"kilo- =  1e3   = k-"
+  ,"kilo- =  1e3   = k-"
   -- ,"mega- =  1e6   = M-"
   -- ,"giga- =  1e9   = G-"
   -- ,"tera- =  1e12  = T-"
@@ -41,7 +41,7 @@ defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
 
    -- reference
   ,"meter = [length] = m = metre"
-  --,"second = [time] = s = sec"
+  ,"second = [time] = s = sec"
   -- ,"ampere = [current] = A = amp"
   -- ,"candela = [luminosity] = cd = candle"
   -- ,"gram = [mass] = g"
@@ -65,7 +65,7 @@ defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
   --,"angstrom = 1e-10 * meter"
   ,"inch = 2.54 * centimeter = international_inch = inches = international_inches = in"
   ,"foot = 12 * inch = international_foot = ft = feet = international_foot = international_feet"
-  -- ,"mile = 5280 * foot = mi = international_mile"
+  ,"mile = 5280 * foot = mi = international_mile"
   -- ,"yard = 3 * feet = yd = international_yard"
   -- ,"mil = inch / 1000 = thou"
   -- ,"parsec = 3.08568025e16 * meter = pc"
@@ -86,9 +86,9 @@ defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
   -- ,"kayser = 1 / centimeter = wavenumber"
 
    -- Time
-  --,"minute = 60 * second = min"
-  --,"hour = 60 * minute = h = hr"
-  -- ,"day = 24 * hour"
+  ,"minute = 60 * second = min"
+  ,"hour = 60 * minute = h = hr"
+  ,"day = 24 * hour"
   -- ,"week = 7 * day"
   -- ,"fortnight = 2 * week"
   -- ,"year = 31556925.9747 * second"

@@ -61,9 +61,11 @@ preprocessUnit d (SimpleUnit s _ p)
 
 
 prefixParser :: Definitions -> String -> (String, String)
-prefixParser d input = case P.parse (prefixParser' d) "arithmetic" input of
-  Left _ -> ("", input)
-  Right val -> splitAt (length val) input
+prefixParser d input = if input `elem` unitsList d then
+                          ("", input) else
+                          case P.parse (prefixParser' d) "arithmetic" input of
+                            Left _ -> ("", input)
+                            Right val -> splitAt (length val) input
 
 
 prefixParser' :: Definitions -> P.Parser String
