@@ -38,7 +38,7 @@ parseExpr = spaces' >> parseExpr' <* spaces'
 -- parseExpr'      = try parseTermOp     <|> parseTerm
 -- parseTerm       = try parseFactorOp   <|> parseFactor
 -- parseFactor     = try parseExpOp      <|> parseExp
--- parseExp        = try parseNestedExpr <|> parseSymbol
+-- parseExp        = try parseNestedExpr <|> parseSymbolNum
 -- parseNestedExpr = spaces' >> char '(' *> spaces' >> parseExpr' <* spaces' <* char ')' <* spaces' <?> "parseNested"
 
 -- parseExpOp, parseTermOp, parseFactorOp :: Parser Quantity
@@ -49,7 +49,7 @@ parseExpr = spaces' >> parseExpr' <* spaces'
 parseExpr', parseFactor, parseExp, parseNestedExpr :: Parser Quantity
 parseExpr'      = try parseFactorOp   <|> parseFactor
 parseFactor     = try parseExpOp      <|> parseExp
-parseExp        = try parseNestedExpr <|> parseSymbol
+parseExp        = try parseNestedExpr <|> parseSymbolNum
 parseNestedExpr = spaces' >> char '(' *> spaces' >> parseExpr' <* spaces' <* char ')' <* spaces' <?> "parseNested"
 
 parseExpOp, parseFactorOp :: Parser Quantity
@@ -74,13 +74,13 @@ exptQuants' q (Quantity y [] _) = exptQuants q y
 exptQuants' a b  = error $ "Used non-dimensionless exponent in " ++ showq
   where showq = unwords ["(", show a, ") ** (", show b, ")"]
 
-parseSymbol :: Parser Quantity
-parseSymbol = try parseNum <|> parseSymbol'
+parseSymbolNum :: Parser Quantity
+parseSymbolNum = try parseNum <|> parseSymbol'
 
 parseSymbol' :: Parser Quantity
 parseSymbol' = do
   neg <- option "" $ string "-"
-  sym <- many1 letter
+  sym <- many1 (letter <|> char '_')
   _ <- spaces'
   return $ baseQuant (timesSign neg 1) [SimpleUnit sym "" 1]
 
@@ -101,7 +101,7 @@ parseNum' = do
 parseExponential :: Parser String
 parseExponential = do
   e <- string "e"
-  neg <- option "" $ string "-"
+  neg <- option "" $ string "+" <|> string "-"
   pow <- many1 digit
   return $ e ++ neg ++ pow
 

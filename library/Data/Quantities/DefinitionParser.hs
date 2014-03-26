@@ -51,14 +51,14 @@ parseDefLine = do
 
 parseUnitDef :: Parser Definition
 parseUnitDef = do
-  sym   <- many1 letter <* spaces <* char '='
+  sym   <- parseSymbol <* spaces <* char '='
   quant <- parseExpr
   spaces
   -- skipMany comment
   return $ UnitDefinition sym quant []
 
 parseSynonym :: Parser Symbol
-parseSynonym = spaces >> char '=' >> spaces >> many1 letter <* spaces
+parseSynonym = spaces >> char '=' >> spaces >> parseSymbol <* spaces
 
 
 -- | Parse line containing base definition
@@ -71,8 +71,8 @@ parseBaseLine = do
 
 parseBase :: Parser (Symbol, Symbol)
 parseBase = do
-  sym <- many1 letter <* spaces <* char '='
-  b <- spaces >> char '[' >> many1 letter <* char ']'
+  sym <- parseSymbol <* spaces <* char '='
+  b <- spaces >> char '[' >> parseSymbol <* char ']'
   spaces
   -- skipMany comment
   return (sym, b)
@@ -87,11 +87,16 @@ parsePrefixLine = do
 
 parsePrefix :: Parser (Symbol, Double)
 parsePrefix = do
-  pre <- many1 letter <* char '-' <* spaces <* char '='
+  pre <- parseSymbol <* char '-' <* spaces <* char '='
   fac <- spaces >> parseNum'
   spaces
   -- skipMany comment
   return (pre, fac)
 
 parsePrefixSynonym :: Parser Symbol
-parsePrefixSynonym = spaces >> char '=' >> spaces >> many1 letter <* char '-' <* spaces
+parsePrefixSynonym = spaces >> char '=' >> spaces >> parseSymbol <* char '-' <* spaces
+
+
+-- | Parse a symbol for a unit
+parseSymbol :: Parser Symbol
+parseSymbol = many1 (letter <|> char '_')

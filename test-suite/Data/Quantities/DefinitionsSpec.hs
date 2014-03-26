@@ -65,6 +65,14 @@ spec = do
         let (Right computed) = preprocessQuantity allDict qm2
         computed  `shouldBe` baseQuant 3 [ppm2]
 
+    let hectDef  = PrefixDefinition "hecto" 1e-3 ["h"]
+        hrDef = BaseDefinition "hour" "time" ["h", "hr"]
+        hectHrDict = makeDefinitions [hectDef, hrDef]
+    describe "prefixParser" $ do
+      it "handles unit/prefix ambiguity" $ do
+        let (pr, sym) = prefixParser hectHrDict "hr"
+        pr `shouldBe` ""
+        sym `shouldBe` "hr"
 
 isLeft :: Either a b -> Bool
 isLeft = null . rights . return
