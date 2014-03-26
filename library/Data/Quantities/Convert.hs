@@ -19,7 +19,7 @@ convert' d x u = Quantity mag u d
 -- u1 to u2, this is how much to multiply the value in u1 by to get to
 -- u2.
 conversionFactor :: Definitions -> CompositeUnit -> CompositeUnit -> Double
-conversionFactor d u1 u2 = baseFactor d u2 / baseFactor d u1
+conversionFactor d u1 u2 = baseFactor d u1 / baseFactor d u2
 
 -- | Factor to convert units to their base.
 baseFactor :: Definitions -> CompositeUnit -> Double
