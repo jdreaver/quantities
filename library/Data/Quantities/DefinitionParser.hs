@@ -4,8 +4,8 @@ import Control.Applicative ((<$>), (<*))
 import System.Environment
 import Text.ParserCombinators.Parsec
 
-import Data.Quantities.Data (Definition (..), Symbol)
-import Data.Quantities.ExprParser (parseExpr, parseNum')
+import Data.Quantities.Data (Definition (..), Symbol, units, magnitude)
+import Data.Quantities.ExprParser (parseExpr)
 
 
 main :: IO ()
@@ -88,10 +88,12 @@ parsePrefixLine = do
 parsePrefix :: Parser (Symbol, Double)
 parsePrefix = do
   pre <- parseSymbol <* char '-' <* spaces <* char '='
-  fac <- spaces >> parseNum'
+  facQuant <- spaces >> parseExpr
   spaces
-  -- skipMany comment
-  return (pre, fac)
+  if null (units facQuant) then
+    return (pre, magnitude facQuant)
+    else fail "No units allowed in prefix definitions"
+
 
 parsePrefixSynonym :: Parser Symbol
 parsePrefixSynonym = spaces >> char '=' >> spaces >> parseSymbol <* char '-' <* spaces
