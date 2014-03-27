@@ -1,8 +1,8 @@
 module Data.Quantities.ConvertSpec (spec) where
 
 import Data.Quantities.Convert
-import Data.Quantities.Data (fromDefinitions, magnitude, units, SimpleUnit(..),
-                             Quantity(..), CompositeUnit, Definitions)
+import Data.Quantities.Data (fromDefinitions, SimpleUnit(..), Quantity(..),
+                             CompositeUnit, Definitions)
 import Data.Quantities.DefinitionParser (readDefinitions)
 import Data.Quantities.Definitions (makeDefinitions)
 import Test.Hspec

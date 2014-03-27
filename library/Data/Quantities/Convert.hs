@@ -2,8 +2,7 @@ module Data.Quantities.Convert where
 
 import qualified Data.Map as M
 
-import Data.Quantities.Data (Quantity(..), CompositeUnit, SimpleUnit(..), Definitions(..),
-                             magnitude, units)
+import Data.Quantities.Data (Quantity(..), CompositeUnit, SimpleUnit(..), Definitions(..))
 
 
 -- | Convert quantity to given units.

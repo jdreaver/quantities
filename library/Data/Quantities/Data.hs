@@ -28,15 +28,10 @@ instance Show SimpleUnit where
 type CompositeUnit = [SimpleUnit]
 
 -- | Combination of magnitude and units.
-data Quantity = Quantity { magnitude' :: Double
-                         , units'     :: CompositeUnit
-                         , defs       :: Definitions } deriving (Ord)
+data Quantity = Quantity { magnitude :: Double
+                         , units     :: CompositeUnit
+                         , defs      :: Definitions } deriving (Ord)
 
-magnitude :: Quantity -> Double
-magnitude = magnitude'
-
-units :: Quantity -> CompositeUnit
-units = units'
 
 instance Show Quantity where
   show (Quantity m us _) = unwords $ show m : map show (showSort us)

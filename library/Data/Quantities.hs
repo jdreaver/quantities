@@ -12,8 +12,8 @@ module Data.Quantities (units
 
 
 import Data.Quantities.Convert (convert, addQuants, subtractQuants)
-import Data.Quantities.Data (units, magnitude, multiplyQuants, divideQuants,
-                             exptQuants, Quantity)
+import Data.Quantities.Data (multiplyQuants, divideQuants, exptQuants,
+                             Quantity(units, magnitude))
 import Data.Quantities.Definitions (preprocessQuantity)
 import Data.Quantities.DefaultUnits (defaultDefinitions)
 import Data.Quantities.ExprParser (parseExprQuant)
