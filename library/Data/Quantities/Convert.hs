@@ -1,5 +1,6 @@
 module Data.Quantities.Convert where
 
+import Data.List (sort)
 import qualified Data.Map as M
 
 import Data.Quantities.Data (Quantity(..), CompositeUnit, SimpleUnit(..), Definitions(..)
@@ -42,6 +43,16 @@ simpleToBase d (SimpleUnit sym pre pow) = Quantity m us d
   where (m', u') = bases d M.! sym
         us = map (\(SimpleUnit s p pow') -> SimpleUnit s p (pow*pow')) u'
         m = (m' * (prefixValues d M.! pre)) ** pow
+
+
+-- | Computes dimensionality of quantity.
+dimensionality :: Quantity -> CompositeUnit
+dimensionality q = dimensionality' (defs q) (units q)
+
+dimensionality' :: Definitions -> CompositeUnit -> CompositeUnit
+dimensionality' d us = sort $ map dim ub
+  where (Quantity _ ub _) = toBase d us
+        dim (SimpleUnit sym _ pow) = SimpleUnit (unitTypes d M.! sym) "" pow
 
 
 -- | Adds two quantities.

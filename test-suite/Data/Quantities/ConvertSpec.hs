@@ -20,6 +20,7 @@ testDefs = makeDefinitions $ readDefinitions $ unlines [
   ,"meter = [length] = m = metre"
   ,"inch = 2.54 * centimeter = in"
   ,"foot = 12 * inch = international_foot = ft = feet"
+  ,"second = [time] = s = sec"
    ]
 
 spec :: Spec
@@ -56,3 +57,12 @@ spec = do
             q  = subtractQuants q1 q2
         abs (magnitude q - (-2.280839)) < 1e-5  `shouldBe` True
         units q `shouldBe` [SimpleUnit "foot" "" 1]
+
+    describe "dimesionality" $ do
+      it "computes dimensionality of simple units" $ do
+        let ft = defaultQuant 1 [SimpleUnit "foot" "" 1]
+        dimensionality ft `shouldBe` [SimpleUnit "length" "" 1]
+
+      it "computes dimensionality of complex units" $ do
+        let sft = defaultQuant 1 [SimpleUnit "second" "" 1, SimpleUnit "foot" "" 1]
+        dimensionality sft `shouldBe` [SimpleUnit "length" "" 1, SimpleUnit "time" "" 1]
