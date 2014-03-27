@@ -5,18 +5,20 @@ module Data.Quantities (units
                        ,divideQuants
                        ,exptQuants
                        ,parseQuant
+                       ,parseUnits
                        ,convert
                        ,convertBase
                        ,dimensionality
                        ,addQuants
                        ,subtractQuants
+                       ,CompositeUnit
                        ,Quantity) where
 
 
 import Data.Quantities.Convert (convert, convertBase, addQuants, subtractQuants,
                                 dimensionality)
 import Data.Quantities.Data (multiplyQuants, divideQuants, exptQuants,
-                             Quantity(units, magnitude))
+                             Quantity(units, magnitude), CompositeUnit)
 import Data.Quantities.Definitions (preprocessQuantity)
 import Data.Quantities.DefaultUnits (defaultDefinitions)
 import Data.Quantities.ExprParser (parseExprQuant)
@@ -29,3 +31,11 @@ parseQuant s =
       (Left err) -> Left $ show err
       (Right q') -> Right q'
   where rawq = parseExprQuant s
+
+
+parseUnits :: String -> Either String CompositeUnit
+parseUnits s =
+  case q of
+    (Left err) -> Left err
+    (Right q') -> Right $ units q'
+  where q = parseQuant s
