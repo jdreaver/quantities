@@ -115,21 +115,54 @@ defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
   -- ,"work_year = 2056 * hour"
   -- ,"work_month = work_year/12"
 
-   ]
+   -- Mass
+  ,"dram = oz / 16 = dr = avoirdupois_dram"
+  ,"ounce = 28.349523125 * gram = oz = avoirdupois_ounce"
+  ,"pound = 0.45359237 * kilogram = lb = avoirdupois_pound"
+  ,"stone = 14 * lb = st"
+  ,"carat = 200 * milligram"
+  ,"grain = 64.79891 * milligram = gr"
+  ,"long_hundredweight = 112 * lb"
+  ,"short_hundredweight = 100 * lb"
+  ,"metric_ton = 1000 * kilogram = t = tonne"
+  ,"pennyweight = 24 * gram = dwt"
+  ,"slug = 14.59390 * kilogram"
+  ,"troy_ounce = 480 * gram = toz = apounce = apothecary_ounce"
+  ,"troy_pound = 12 * toz = tlb = appound = apothecary_pound"
+  ,"drachm = 60 * gram = apdram = apothecary_dram"
+  ,"atomic_mass_unit = 1.660538782e-27 * kilogram =  u = amu = dalton = Da"
+  ,"scruple = 20 * gram"
+  ,"bag = 94 * lb"
+  ,"ton = 2000 * lb = short_ton"
 
-otherDefinitions :: Definitions
-otherDefinitions = makeDefinitions $ readDefinitions $ unlines [
+   -- Force
+   --[force] = [mass] * [acceleration]
+  ,"newton = kilogram * meter / second ** 2 = N"
+  ,"dyne = gram * centimeter / second ** 2 = dyn"
+  ,"force_kilogram = g_0 * kilogram = kgf = kilogram_force = pond"
+  ,"force_gram = g_0 * gram = gf = gram_force"
+  ,"force_ounce = g_0 * ounce = ozf = ounce_force"
+  ,"force_pound = g_0 * lb = lbf = pound_force"
+  ,"force_ton = 2000 * force_pound = ton_force"
+  ,"poundal = lb * feet / second ** 2 = pdl"
+  ,"kip = 1000*lbf"
+
    -- Area
    -- [area] = [length] ** 2
-  "are = 100 * m**2"
+  ,"are = 100 * m**2"
   ,"barn = 1e-28 * m ** 2 = b"
   ,"cmil = 5.067075e-10 * m ** 2 = circular_mils"
   ,"darcy = 9.869233e-13 * m ** 2"
   ,"acre = 4046.8564224 * m ** 2 = international_acre"
   ,"US_survey_acre = 160 * rod ** 2"
 
+   ]
+
+otherDefinitions :: Definitions
+otherDefinitions = makeDefinitions $ readDefinitions $ unlines [
+
    -- EM
-  ,"esu = 1 * erg**0.5 * centimeter**0.5 = statcoulombs = statC = franklin = Fr"
+  "esu = 1 * erg**0.5 * centimeter**0.5 = statcoulombs = statC = franklin = Fr"
   ,"esu_per_second = 1 * esu / second = statampere"
   ,"ampere_turn = 1 * A"
   ,"gilbert = 10 / (4 * pi ) * ampere_turn = G"
@@ -169,18 +202,6 @@ otherDefinitions = makeDefinitions $ readDefinitions $ unlines [
   ,"watt_hour = watt * hour = Wh = watthour"
   ,"E_h = 4.35974394e-18 * joule = hartree = hartree_energy"
 
-   -- Force
-  ,"[force] = [mass] * [acceleration]"
-  ,"newton = kilogram * meter / second ** 2 = N"
-  ,"dyne = gram * centimeter / second ** 2 = dyn"
-  ,"force_kilogram = g_0 * kilogram = kgf = kilogram_force = pond"
-  ,"force_gram = g_0 * gram = gf = gram_force"
-  ,"force_ounce = g_0 * ounce = ozf = ounce_force"
-  ,"force_pound = g_0 * lb = lbf = pound_force"
-  ,"force_ton = 2000 * force_pound = ton_force"
-  ,"poundal = lb * feet / second ** 2 = pdl"
-  ,"kip = 1000*lbf"
-
    -- Frequency
   ,"hertz = 1 / second = Hz = rps"
   ,"revolutions_per_minute = revolution / minute = rpm"
@@ -195,25 +216,6 @@ otherDefinitions = makeDefinitions $ readDefinitions $ unlines [
   ,"byte = 8 * bit = Bo = octet"
   ,"baud = bit / second = Bd = bps"
 
-   -- Mass
-  ,"dram = oz / 16 = dr = avoirdupois_dram"
-  ,"ounce = 28.349523125 * gram = oz = avoirdupois_ounce"
-  ,"pound = 0.45359237 * kilogram = lb = avoirdupois_pound"
-  ,"stone = 14 * lb = st"
-  ,"carat = 200 * milligram"
-  ,"grain = 64.79891 * milligram = gr"
-  ,"long_hundredweight = 112 * lb"
-  ,"short_hundredweight = 100 * lb"
-  ,"metric_ton = 1000 * kilogram = t = tonne"
-  ,"pennyweight = 24 * gram = dwt"
-  ,"slug = 14.59390 * kilogram"
-  ,"troy_ounce = 480 * gram = toz = apounce = apothecary_ounce"
-  ,"troy_pound = 12 * toz = tlb = appound = apothecary_pound"
-  ,"drachm = 60 * gram = apdram = apothecary_dram"
-  ,"atomic_mass_unit = 1.660538782e-27 * kilogram =  u = amu = dalton = Da"
-  ,"scruple = 20 * gram"
-  ,"bag = 94 * lb"
-  ,"ton = 2000 * lb = short_ton"
 
    -- Textile
   ,"denier =  gram / (9000 * meter)"

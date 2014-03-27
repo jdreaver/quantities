@@ -31,14 +31,15 @@ spec = do
 
     describe "conversionFactor" $ do
       it "handles simple units" $ do
-        let u1  = [SimpleUnit "meter" "" 1]
+        let q1  = defaultQuant 1 [SimpleUnit "meter" "" 1]
             u2  = [SimpleUnit "foot" "" 1]
-            err = abs (conversionFactor testDefs u1 u2 - 3.280839)
+            mag = magnitude (convert q1 u2)
+            err = abs (mag - 3.280839)
         err < 0.0001 `shouldBe` True
       it "handles prefixes" $ do
-        let u1 = [SimpleUnit "meter" "milli" 1]
+        let q1 = defaultQuant 1 [SimpleUnit "meter" "milli" 1]
             u2 = [SimpleUnit "meter" "" 1]
-        conversionFactor testDefs u1 u2 `shouldBe` 1e-3
+        magnitude (convert q1 u2) `shouldBe` 1e-3
 
     describe "addQuants" $ do
       it "" $ do

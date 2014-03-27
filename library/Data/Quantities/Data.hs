@@ -110,8 +110,7 @@ data Definition = PrefixDefinition { defPrefix   :: Symbol
                                    , defSynonyms :: [Symbol]} deriving (Show, Eq, Ord)
 
 
-data Definitions = Definitions { bases          :: M.Map String String
-                               , conversions    :: M.Map (String, String) Double
+data Definitions = Definitions { bases          :: M.Map String (Double, CompositeUnit)
                                , synonyms       :: M.Map String String
                                , unitsList      :: [String]
                                , prefixes       :: [String]
@@ -121,7 +120,6 @@ data Definitions = Definitions { bases          :: M.Map String String
 
 emptyDefinitions :: Definitions
 emptyDefinitions = Definitions { bases          = M.empty
-                               , conversions    = M.empty
                                , synonyms       = M.empty
                                , unitsList      = []
                                , prefixes       = []
@@ -134,7 +132,6 @@ emptyDefinitions = Definitions { bases          = M.empty
 unionDefinitions :: Definitions -> Definitions -> Definitions
 unionDefinitions d1 d2 = Definitions {
   bases = bases d1 `M.union` bases d2
-  , conversions = conversions d1 `M.union` conversions d2
   , synonyms = synonyms d1 `M.union` synonyms d2
   , unitsList = unitsList d1 ++ unitsList d2
   , prefixes = prefixes d1 ++ prefixes d2

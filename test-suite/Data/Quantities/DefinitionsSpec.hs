@@ -3,8 +3,7 @@ module Data.Quantities.DefinitionsSpec (spec) where
 import Data.Either (rights)
 import qualified Data.Map as M
 
-import Data.Quantities.Data (Definition(..), Definitions(..), SimpleUnit(..),
-                             baseQuant)
+import Data.Quantities.Data (Definition(..), Definitions(..), SimpleUnit(..), baseQuant)
 import Data.Quantities.Definitions
 import Test.Hspec
 
@@ -23,8 +22,7 @@ spec = do
 
     describe "makeDefinitions" $ do
       it "makes base definition" $ do
-        bases baseDict M.! "meter" `shouldBe` "meter"
-        conversions baseDict M.! ("meter", "meter") `shouldBe` 1
+        bases baseDict M.! "meter" `shouldBe` (1, [SimpleUnit "meter" "" 1])
         unitsList baseDict  `shouldBe` ["meter", "m"]
         synonyms baseDict M.! "m" `shouldBe` "meter"
         unitTypes baseDict M.! "meter" `shouldBe` "length"
@@ -35,8 +33,7 @@ spec = do
         prefixSynonyms preDict M.! "m" `shouldBe` "milli"
 
       it "makes unit definition" $ do
-        bases ftDict M.! "foot" `shouldBe` "meter"
-        conversions ftDict M.! ("foot", "meter") `shouldBe` 3.21
+        bases allDict M.! "foot" `shouldBe` (3.21, [SimpleUnit "meter" "" 1])
         synonyms ftDict M.! "ft" `shouldBe` "foot"
         "foot" `elem` unitsList ftDict `shouldBe` True
 

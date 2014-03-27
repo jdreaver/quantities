@@ -22,8 +22,7 @@ addDefinition (PrefixDefinition sym fac syns) = modify $
 
 addDefinition (BaseDefinition sym utype syns) = modify $
   unionDefinitions emptyDefinitions {
-  bases         = M.singleton sym sym
-  , conversions = M.singleton (sym, sym) 1
+  bases         = M.singleton sym (1, [SimpleUnit sym "" 1])
   , unitsList   = sym : syns
   , synonyms    = M.fromList $ zip (sym : syns) (repeat sym)
   , unitTypes   = M.singleton sym utype }
@@ -35,10 +34,8 @@ addDefinition (UnitDefinition sym q syns) = do
   d <- get
   let (Right pq) = preprocessQuantity d q
       (Quantity baseFac baseUnits _) = convertBase' d pq
-      baseSym = symbol (head baseUnits)
   modify $ unionDefinitions emptyDefinitions {
-    bases         = M.singleton sym baseSym
-    , conversions = M.singleton (sym, baseSym) baseFac
+    bases         = M.singleton sym (baseFac, baseUnits)
     , synonyms    = M.fromList $ zip (sym : syns) (repeat sym)
     , unitsList   = sym : syns }
 
