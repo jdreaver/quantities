@@ -2,7 +2,7 @@ module Data.Quantities.ConvertSpec (spec) where
 
 import Data.Quantities.Convert
 import Data.Quantities.Data (fromDefinitions, SimpleUnit(..), Quantity(..),
-                             CompositeUnit, Definitions)
+                             CompositeUnit, Definitions, QuantityError(..))
 import Data.Quantities.DefinitionParser (readDefinitions)
 import Data.Quantities.Definitions (makeDefinitions)
 import Test.Hspec
@@ -30,23 +30,31 @@ spec = do
         let q = defaultQuant 1 [SimpleUnit "foot" "" 1]
         convertBase q `shouldBe` defaultQuant 0.3048 [SimpleUnit "meter" "" 1]
 
-    describe "conversionFactor" $ do
+    describe "convert" $ do
       it "handles simple units" $ do
         let q1  = defaultQuant 1 [SimpleUnit "meter" "" 1]
             u2  = [SimpleUnit "foot" "" 1]
-            mag = magnitude (convert q1 u2)
-            err = abs (mag - 3.280839)
+            (Right conv) = convert q1 u2
+            err = abs (magnitude conv - 3.280839)
         err < 0.0001 `shouldBe` True
       it "handles prefixes" $ do
         let q1 = defaultQuant 1 [SimpleUnit "meter" "milli" 1]
             u2 = [SimpleUnit "meter" "" 1]
-        magnitude (convert q1 u2) `shouldBe` 1e-3
+            (Right conv) = convert q1 u2
+        magnitude conv `shouldBe` 1e-3
+      it "throws dimensionality error" $ do
+        let q1  = defaultQuant 1 [SimpleUnit "second" "" 1]
+            u2  = [SimpleUnit "meter" "" 1]
+            dq1 = dimensionality' testDefs (units q1)
+            du2 = dimensionality' testDefs u2
+            (Left err) = convert q1 u2
+        err `shouldBe` DimensionalityError dq1 du2
 
     describe "addQuants" $ do
       it "" $ do
         let q1 = defaultQuant 1 [SimpleUnit "foot" "" 1]
             q2 = defaultQuant 1 [SimpleUnit "meter" "" 1]
-            q  = addQuants q1 q2
+            (Right q)  = addQuants q1 q2
         abs (magnitude q - 4.280839) < 0.0001 `shouldBe` True
         units q `shouldBe` [SimpleUnit "foot" "" 1]
 
@@ -54,7 +62,7 @@ spec = do
       it "" $ do
         let q1 = defaultQuant 1 [SimpleUnit "foot" "" 1]
             q2 = defaultQuant 1 [SimpleUnit "meter" "" 1]
-            q  = subtractQuants q1 q2
+            (Right q)  = subtractQuants q1 q2
         abs (magnitude q - (-2.280839)) < 1e-5  `shouldBe` True
         units q `shouldBe` [SimpleUnit "foot" "" 1]
 

@@ -4,13 +4,13 @@ import Data.List (sort)
 import qualified Data.Map as M
 
 import Data.Quantities.Data (Quantity(..), CompositeUnit, SimpleUnit(..), Definitions(..)
-                            ,multiplyQuants)
+                            ,multiplyQuants, QuantityError(..))
 
 unityQuant :: Definitions -> Quantity
 unityQuant = Quantity 1 []
 
 -- | Convert quantity to given units.
-convert :: Quantity -> CompositeUnit -> Quantity
+convert :: Quantity -> CompositeUnit -> Either QuantityError Quantity
 convert x = convert' (defs x) x
 
 
@@ -20,10 +20,14 @@ convertBase x = convertBase' (defs x) x
 
 
 -- | Convert quantity to given units.
-convert' :: Definitions -> Quantity -> CompositeUnit -> Quantity
-convert' d q us' = Quantity (mb/mb') us' d
+convert' :: Definitions -> Quantity -> CompositeUnit -> Either QuantityError Quantity
+convert' d q us'
+  | dimq /= dimus = Left $ DimensionalityError dimq dimus
+  | otherwise     = Right $ Quantity (mb/mb') us' d
   where (Quantity mb  _ _) = convertBase' d q
         (Quantity mb' _ _) = toBase d us'
+        dimq               = dimensionality' d (units q)
+        dimus              = dimensionality' d us'
 
 
 -- | Convert a quantity to its base units.
@@ -56,12 +60,17 @@ dimensionality' d us = sort $ map dim ub
 
 
 -- | Adds two quantities.
-addQuants :: Quantity -> Quantity -> Quantity
-addQuants (Quantity m1 u1 d) q2 = Quantity (m1+m2') u1 d
-  where (Quantity m2' _ _) = convert q2 u1
+addQuants :: Quantity -> Quantity -> Either QuantityError Quantity
+addQuants = linearQuants (+)
 
 
 -- | Subtract two quantities.
-subtractQuants :: Quantity -> Quantity -> Quantity
-subtractQuants (Quantity m1 u1 d) q2 = Quantity (m1-m2') u1 d
-  where (Quantity m2' _ _) = convert q2 u1
+subtractQuants :: Quantity -> Quantity -> Either QuantityError Quantity
+subtractQuants = linearQuants (-)
+
+
+linearQuants :: (Double -> Double -> Double) -> Quantity -> Quantity -> Either QuantityError Quantity
+linearQuants f (Quantity m1 u1 d) q2 = case q of
+  (Right q') -> Right $ Quantity (f m1 (magnitude q')) u1 d
+  (Left err) -> Left err
+  where q = convert q2 u1
