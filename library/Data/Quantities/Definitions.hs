@@ -20,17 +20,15 @@ addDefinition (PrefixDefinition sym fac syns) = do
         prefixes         = sym : syns
         , prefixValues   = M.singleton sym fac
         , prefixSynonyms = M.fromList $ zip (sym : syns) (repeat sym) }
-  if sym `elem` prefixes d then
-    lift . Left . PrefixAlreadyDefinedError $ sym ++ "-"
-    else
-    put $ d `unionDefinitions` newd
+  if sym `elem` prefixes d
+    then lift . Left . PrefixAlreadyDefinedError $ sym ++ "-"
+    else put $ d `unionDefinitions` newd
 
 addDefinition (BaseDefinition sym utype syns) = do
   d <- get
-  if sym `elem` unitsList d then
-    lift . Left $ UnitAlreadyDefinedError sym
-    else
-    put $ d `unionDefinitions` emptyDefinitions {
+  if sym `elem` unitsList d
+    then lift . Left $ UnitAlreadyDefinedError sym
+    else put $ d `unionDefinitions` emptyDefinitions {
       bases         = M.singleton sym (1, [SimpleUnit sym "" 1])
       , unitsList   = sym : syns
       , synonyms    = M.fromList $ zip (sym : syns) (repeat sym)
@@ -42,10 +40,9 @@ addDefinition (UnitDefinition sym q syns) = do
   -- modification like prefix and base definitions.
   d <- get
   let pq = preprocessQuantity d q
-  if sym `elem` unitsList d then
-    lift . Left $ UnitAlreadyDefinedError sym
-    else
-    case pq  of
+  if sym `elem` unitsList d
+    then lift . Left $ UnitAlreadyDefinedError sym
+    else case pq  of
       (Right pq') -> do
         let (Quantity baseFac baseUnits _) = convertBase' d pq'
         put $ d `unionDefinitions` emptyDefinitions {
@@ -73,9 +70,9 @@ preprocessUnit d (SimpleUnit s _ p)
 
 
 prefixParser :: Definitions -> String -> (String, String)
-prefixParser d input = if input `elem` unitsList d then
-                          ("", input) else
-                          case P.parse (prefixParser' d) "arithmetic" input of
+prefixParser d input = if input `elem` unitsList d
+                          then ("", input)
+                          else case P.parse (prefixParser' d) "arithmetic" input of
                             Left _ -> ("", input)
                             Right val -> splitAt (length val) input
 
