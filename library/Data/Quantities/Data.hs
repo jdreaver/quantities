@@ -16,16 +16,28 @@ data SimpleUnit = SimpleUnit { symbol :: String
 
 instance Show SimpleUnit where
   show (SimpleUnit s pr p)
-    | p == 1    = pr ++ s
-    | p > 0     = pr ++ s ++ " ** " ++ show p
-    | p == -1   = "/ " ++ pr ++ s
-    | otherwise = "/ " ++ pr ++ s ++ " ** " ++ show (-p)
-
+    | p == 1    = sym
+    | otherwise = sym ++ " ** " ++ show p
+    where sym = pr ++ s
 
 
 -- | Collection of SimpleUnits. Represents combination of simple
 -- units.
 type CompositeUnit = [SimpleUnit]
+
+-- | Used to show composite units.
+showCompUnit :: CompositeUnit -> String
+showCompUnit = unwords . map showCompUnit' . showSort
+
+-- | Show a single unit, but prepend with '/' if negative
+showCompUnit' :: SimpleUnit -> String
+showCompUnit' (SimpleUnit s pr p)
+  | p == 1    = sym
+  | p == -1   = "/ " ++ sym
+  | p < 0     = "/ " ++ sym ++ " ** " ++ show (-p)
+  | otherwise = sym ++ " ** " ++ show p
+  where sym = pr ++ s
+
 
 -- | Combination of magnitude and units.
 data Quantity = Quantity { magnitude :: Double
@@ -34,7 +46,7 @@ data Quantity = Quantity { magnitude :: Double
 
 
 instance Show Quantity where
-  show (Quantity m us _) = unwords $ show m : map show (showSort us)
+  show (Quantity m us _) = show m ++ " " ++ showCompUnit us
 
 -- | Sort units but put negative units at end
 showSort :: CompositeUnit -> CompositeUnit

@@ -6,7 +6,5 @@ Unit conversion and manipulation library for Haskell.
 
 ## TODO
 
-* Check for correct dimensionality when converting, and make conversion
-  computations monadic so this is easier.
 * When reading definitions, make sure unit not already defined.
 * More error checking for definitions (exhaustive pattern matching)
