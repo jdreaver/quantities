@@ -67,6 +67,8 @@ fromDefinitions d m u = Quantity m u d
 -- | Custom error type
 data QuantityError = UndefinedUnitError String
                    | DimensionalityError CompositeUnit CompositeUnit
+                   | UnitAlreadyDefinedError String
+                   | PrefixAlreadyDefinedError String
                    deriving (Show, Eq)
 
 

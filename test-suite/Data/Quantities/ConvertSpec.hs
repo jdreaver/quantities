@@ -13,7 +13,7 @@ defaultQuant :: Double -> CompositeUnit -> Quantity
 defaultQuant = fromDefinitions testDefs
 
 testDefs :: Definitions
-testDefs = makeDefinitions $ readDefinitions $ unlines [
+(Right testDefs) = makeDefinitions $ readDefinitions $ unlines [
   "milli- = 1e-3  = m-"
   ,"centi- = 1e-2  = c-"
   -- ,"kilo- =  1e3   = k-"

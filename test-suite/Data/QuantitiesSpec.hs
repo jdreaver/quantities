@@ -1,7 +1,7 @@
 module Data.QuantitiesSpec (spec) where
 
 import Data.Quantities
-import Data.Quantities.Data (SimpleUnit(..), Quantity(..))
+import Data.Quantities.Data (SimpleUnit(..))
 import Test.Hspec
 
 {-# ANN module "HLint: ignore Redundant do" #-}

@@ -6,5 +6,8 @@ Unit conversion and manipulation library for Haskell.
 
 ## TODO
 
-* When reading definitions, make sure unit not already defined.
-* More error checking for definitions (exhaustive pattern matching)
+* Add ability to create units out of order; base quantity does not
+  already have to be defined, as long as it is defined in the file.
+* Add line numbers to definition parser
+* Check that synonyms aren't already defined too
+* Handle temperature!

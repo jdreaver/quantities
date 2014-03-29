@@ -8,8 +8,8 @@ import Data.Quantities.Definitions (makeDefinitions)
 -- conversion library for the Python programming language. Check them
 -- out at https://github.com/hgrecco/pint.
 
-defaultDefinitions :: Definitions
-defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
+defaultDefinitions' :: String
+defaultDefinitions' = unlines [
 
 -- decimal prefixes
   "yocto- = 1e-24 = y-"
@@ -51,73 +51,78 @@ defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
   ,"gram = [mass] = g"
   ,"mole = [substance] = mol"
   --,"degK = [temperature]; offset: 0 = K = kelvin"
-   --,"radian = [] = rad"
-   --,"bit = []"
-   --,"count = []"
+  ,"radian = [] = rad"
+  ,"bit = []"
+  ,"count = []"
+
+  ,"pi = 3.14159265359"
+  ,"gstandard_gravity = 9.806650 * meter / second ** 2 = g_0 = g_n = gravity"
+  ,"speed_of_light = 299792458 * meter / second = c"
 
    -- acceleration
    -- [acceleration] = [length] / [time] ** 2
 
    -- Angle
-   ,"turn = 2 * pi * radian = revolution = cycle = circle"
-   ,"degree = pi / 180 * radian = deg = arcdeg = arcdegree = angular_degree"
-   ,"arcminute = arcdeg / 60 = arcmin = arc_minute = angular_minute"
-   ,"arcsecond = arcmin / 60 =  arcsec = arc_second = angular_second"
-   ,"steradian = radian ** 2 = sr"
+  ,"turn = 2 * pi * radian = revolution = cycle = circle"
+  ,"degree = pi / 180 * radian = deg = arcdeg = arcdegree = angular_degree"
+  ,"arcminute = arcdeg / 60 = arcmin = arc_minute = angular_minute"
+  ,"arcsecond = arcmin / 60 =  arcsec = arc_second = angular_second"
+  ,"steradian = radian ** 2 = sr"
 
-   -- Length
-  --,"angstrom = 1e-10 * meter"
-  ,"inch = 2.54 * centimeter = international_inch = inches = international_inches = in"
-  ,"foot = 12 * inch = international_foot = ft = feet = international_foot = international_feet"
-  ,"mile = 5280 * foot = mi = international_mile"
-  -- ,"yard = 3 * feet = yd = international_yard"
-  -- ,"mil = inch / 1000 = thou"
-  -- ,"parsec = 3.08568025e16 * meter = pc"
-  -- ,"light_year = speed_of_light * julian_year = ly = lightyear"
-  -- ,"astronomical_unit = 149597870691 * meter = au"
-  -- ,"nautical_mile = 1.852e3 * meter = nmi"
-  -- ,"printers_point = 127 * millimeter / 360 = point"
-  -- ,"printers_pica = 12 * printers_point = pica"
-  -- ,"US_survey_foot = 1200 * meter / 3937"
-  -- ,"US_survey_yard =  3 * US_survey_foot"
-  -- ,"US_survey_mile = 5280 * US_survey_foot = US_statute_mile"
-  -- ,"rod = 16.5 * US_survey_foot = pole = perch"
-  -- ,"furlong = 660 * US_survey_foot"
-  -- ,"fathom = 6 * US_survey_foot"
-  -- ,"chain = 66 * US_survey_foot"
-  -- ,"barleycorn = inch / 3"
-  -- ,"arpentlin = 191.835 * feet"
-  -- ,"kayser = 1 / centimeter = wavenumber"
-
-   -- Time
+    -- Time
   ,"minute = 60 * second = min"
   ,"hour = 60 * minute = h = hr"
   ,"day = 24 * hour"
-  -- ,"week = 7 * day"
-  -- ,"fortnight = 2 * week"
-  -- ,"year = 31556925.9747 * second"
-  -- ,"month = year/12"
-  -- ,"shake = 1e-8 * second"
-  -- ,"sidereal_day = day / 1.00273790935079524"
-  -- ,"sidereal_hour = sidereal_day/24"
-  -- ,"sidereal_minute = sidereal_hour/60"
-  -- ,"sidereal_second =sidereal_minute/60"
-  -- ,"sidereal_year = 366.25636042 * sidereal_day"
-  -- ,"sidereal_month = 27.321661 * sidereal_day"
-  -- ,"tropical_month = 27.321661 * day"
-  -- ,"synodic_month = 29.530589 * day = lunar_month"
-  -- ,"common_year = 365 * day"
-  -- ,"leap_year = 366 * day"
-  -- ,"julian_year = 365.25 * day"
-  -- ,"gregorian_year = 365.2425 * day"
-  -- ,"millenium = 1000 * year = millenia = milenia = milenium"
-  -- ,"eon = 1e9 * year"
-  -- ,"work_year = 2056 * hour"
-  -- ,"work_month = work_year/12"
+  ,"week = 7 * day"
+  ,"fortnight = 2 * week"
+  ,"year = 31556925.9747 * second"
+  ,"month = year/12"
+  ,"shake = 1e-8 * second"
+  ,"sidereal_day = day / 1.00273790935079524"
+  ,"sidereal_hour = sidereal_day/24"
+  ,"sidereal_minute = sidereal_hour/60"
+  ,"sidereal_second =sidereal_minute/60"
+  ,"sidereal_year = 366.25636042 * sidereal_day"
+  ,"sidereal_month = 27.321661 * sidereal_day"
+  ,"tropical_month = 27.321661 * day"
+  ,"synodic_month = 29.530589 * day = lunar_month"
+  ,"common_year = 365 * day"
+  ,"leap_year = 366 * day"
+  ,"julian_year = 365.25 * day"
+  ,"gregorian_year = 365.2425 * day"
+  ,"millenium = 1000 * year = millenia = milenia = milenium"
+  ,"eon = 1e9 * year"
+  ,"work_year = 2056 * hour"
+  ,"work_month = work_year/12"
+
+   -- Length
+  ,"angstrom = 1e-10 * meter"
+  ,"inch = 2.54 * centimeter = international_inch = inches = international_inches = in"
+  ,"foot = 12 * inch = international_foot = ft = feet = international_foot = international_feet"
+  ,"mile = 5280 * foot = mi = international_mile"
+  ,"yard = 3 * feet = yd = international_yard"
+  ,"mil = inch / 1000 = thou"
+  ,"parsec = 3.08568025e16 * meter = pc"
+  ,"light_year = speed_of_light * julian_year = ly = lightyear"
+  ,"astronomical_unit = 149597870691 * meter = au"
+  ,"nautical_mile = 1.852e3 * meter = nmi"
+  ,"printers_point = 127 * millimeter / 360 = point"
+  ,"printers_pica = 12 * printers_point = pica"
+  ,"US_survey_foot = 1200 * meter / 3937"
+  ,"US_survey_yard =  3 * US_survey_foot"
+  ,"US_survey_mile = 5280 * US_survey_foot = US_statute_mile"
+  ,"rod = 16.5 * US_survey_foot = pole = perch"
+  ,"furlong = 660 * US_survey_foot"
+  ,"fathom = 6 * US_survey_foot"
+  ,"chain = 66 * US_survey_foot"
+  ,"barleycorn = inch / 3"
+  ,"arpentlin = 191.835 * feet"
+  ,"kayser = 1 / centimeter = wavenumber"
+
 
    -- Mass
-  ,"dram = oz / 16 = dr = avoirdupois_dram"
   ,"ounce = 28.349523125 * gram = oz = avoirdupois_ounce"
+  ,"dram = oz / 16 = dr = avoirdupois_dram"
   ,"pound = 0.45359237 * kilogram = lb = avoirdupois_pound"
   ,"stone = 14 * lb = st"
   ,"carat = 200 * milligram"
@@ -156,13 +161,33 @@ defaultDefinitions = makeDefinitions $ readDefinitions $ unlines [
   ,"acre = 4046.8564224 * m ** 2 = international_acre"
   ,"US_survey_acre = 160 * rod ** 2"
 
-   ]
+   -- Energy
+  ,"joule = newton * meter = J"
+  ,"erg = dyne * centimeter"
+  ,"btu = 1.05505585262e3 * joule = Btu = BTU = british_thermal_unit"
+  ,"eV = 1.60217653e-19 * J = electron_volt"
+  ,"thm = 100000 * BTU = therm = EC_therm"
+  ,"cal = 4.184 * joule = calorie = thermochemical_calorie"
+  ,"international_steam_table_calorie = 4.1868 * joule"
+  ,"ton_TNT = 4.184e9 * joule = tTNT"
+  ,"US_therm = 1.054804e8 * joule"
+  ,"E_h = 4.35974394e-18 * joule = hartree = hartree_energy"
 
-otherDefinitions :: Definitions
-otherDefinitions = makeDefinitions $ readDefinitions $ unlines [
 
-   -- EM
-  "esu = 1 * erg**0.5 * centimeter**0.5 = statcoulombs = statC = franklin = Fr"
+  -- Power
+  ,"watt = joule / second = W = volt_ampere = VA"
+  ,"horsepower = 33000 * ft * lbf / min = hp = UK_horsepower = British_horsepower"
+  ,"boiler_horsepower = 33475 * btu / hour"
+  ,"metric_horsepower =  75 * force_kilogram * meter / second"
+  ,"electric_horsepower = 746 * watt"
+  ,"hydraulic_horsepower = 550 * feet * lbf / second"
+  ,"refrigeration_ton = 12000 * btu / hour = ton_of_refrigeration"
+
+  -- More Energy
+  ,"watt_hour = watt * hour = Wh = watthour"
+
+  -- EM
+  ,"esu = 1 * erg**0.5 * centimeter**0.5 = statcoulombs = statC = franklin = Fr"
   ,"esu_per_second = 1 * esu / second = statampere"
   ,"ampere_turn = 1 * A"
   ,"gilbert = 10 / (4 * pi ) * ampere_turn = G"
@@ -189,47 +214,20 @@ otherDefinitions = makeDefinitions $ readDefinitions $ unlines [
   ,"statvolt = 2.997925e2 * volt = statV = stV"
   ,"unit_pole = 1.256637e-7 * weber"
 
-   -- Energy
-  ,"joule = newton * meter = J"
-  ,"erg = dyne * centimeter"
-  ,"btu = 1.05505585262e3 * joule = Btu = BTU = british_thermal_unit"
-  ,"eV = 1.60217653e-19 * J = electron_volt"
-  ,"thm = 100000 * BTU = therm = EC_therm"
-  ,"cal = 4.184 * joule = calorie = thermochemical_calorie"
-  ,"international_steam_table_calorie = 4.1868 * joule"
-  ,"ton_TNT = 4.184e9 * joule = tTNT"
-  ,"US_therm = 1.054804e8 * joule"
-  ,"watt_hour = watt * hour = Wh = watthour"
-  ,"E_h = 4.35974394e-18 * joule = hartree = hartree_energy"
 
    -- Frequency
   ,"hertz = 1 / second = Hz = rps"
   ,"revolutions_per_minute = revolution / minute = rpm"
   ,"counts_per_second = count / second = cps"
 
-   -- Heat
-   --RSI = degK * meter ** 2 / watt
-   --clo = 0.155 * RSI = clos
-   --R_value = foot ** 2 * degF * hour / btu
-
    -- Information
   ,"byte = 8 * bit = Bo = octet"
   ,"baud = bit / second = Bd = bps"
-
 
    -- Textile
   ,"denier =  gram / (9000 * meter)"
   ,"tex = gram/ (1000 * meter)"
   ,"dtex = decitex"
-
-   -- Power
-  ,"watt = joule / second = W = volt_ampere = VA"
-  ,"horsepower = 33000 * ft * lbf / min = hp = UK_horsepower = British_horsepower"
-  ,"boiler_horsepower = 33475 * btu / hour"
-  ,"metric_horsepower =  75 * force_kilogram * meter / second"
-  ,"electric_horsepower = 746 * watt"
-  ,"hydraulic_horsepower = 550 * feet * lbf / second"
-  ,"refrigeration_ton = 12000 * btu / hour = ton_of_refrigeration"
 
    -- Pressure
    -- [pressure] = [force] / [area]
@@ -257,6 +255,7 @@ otherDefinitions = makeDefinitions $ readDefinitions $ unlines [
   ,"foot_H2O = ft * water = ftH2O"
   ,"standard_liter_per_minute = 1.68875 * Pa * m ** 3 / s = slpm = slm"
 
+
    -- Radiation
   ,"Bq = Hz = becquerel"
   ,"curie = 3.7e10 * Bq = Ci"
@@ -265,13 +264,6 @@ otherDefinitions = makeDefinitions $ readDefinitions $ unlines [
   ,"rem = 1e-2 * sievert"
   ,"rads = 1e-2 * gray"
   ,"roentgen = 2.58e-4 * coulomb / kilogram = R"
-
-   -- Temperature
-  ,"degR = 9 / 5 * degK; offset: 0 = rankine"
-  ,"degC = degK; offset: 273.15 = celsius = C"
-  ,"degF = 9 / 5 * degK; offset: 255.372222 = fahrenheit = F"
-
-
 
    -- Velocity
    -- [speed] = [length] / [time]
@@ -316,4 +308,19 @@ otherDefinitions = makeDefinitions $ readDefinitions $ unlines [
   ,"peck = bushel / 4 = pk"
   ,"fluid_dram = floz / 8 = fldr = fluidram"
   ,"firkin = barrel / 4"
+   ]
+
+otherDefinitions :: Definitions
+(Right otherDefinitions) = makeDefinitions $ readDefinitions $ unlines [
+
+   -- Heat
+   --RSI = degK * meter ** 2 / watt
+   --clo = 0.155 * RSI = clos
+   --R_value = foot ** 2 * degF * hour / btu
+
+   -- Temperature
+  "degR = 9 / 5 * degK; offset: 0 = rankine"
+  ,"degC = degK; offset: 273.15 = celsius = C"
+  ,"degF = 9 / 5 * degK; offset: 255.372222 = fahrenheit = F"
+
   ]

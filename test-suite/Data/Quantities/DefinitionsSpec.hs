@@ -12,13 +12,13 @@ import Test.Hspec
 spec :: Spec
 spec = do
     let baseDef  = BaseDefinition "meter" "length" ["m"]
-        baseDict = makeDefinitions [baseDef]
+        (Right baseDict) = makeDefinitions [baseDef]
         preDef  = PrefixDefinition "milli" 1e-3 ["m"]
-        preDict = makeDefinitions [preDef]
+        (Right preDict) = makeDefinitions [preDef]
         ftQuant = baseQuant 3.21 [SimpleUnit "m" "" 1]
         ftDef = UnitDefinition "foot" ftQuant ["ft", "feet"]
-        ftDict = makeDefinitions [baseDef, ftDef]
-        allDict = makeDefinitions [baseDef, preDef, ftDef]
+        (Right ftDict) = makeDefinitions [baseDef, ftDef]
+        (Right allDict) = makeDefinitions [baseDef, preDef, ftDef]
 
     describe "makeDefinitions" $ do
       it "makes base definition" $ do
@@ -66,7 +66,7 @@ spec = do
     describe "prefixParser" $ do
       let hectDef    = PrefixDefinition "hecto" 1e-3 ["h"]
           hrDef      = BaseDefinition "hour" "time" ["h", "hr"]
-          hectHrDict = makeDefinitions [hectDef, hrDef]
+          (Right hectHrDict) = makeDefinitions [hectDef, hrDef]
       it "handles hecto/hr ambiguity" $ do
         let (pr, sym) = prefixParser hectHrDict "hr"
         pr `shouldBe` ""
@@ -75,7 +75,7 @@ spec = do
       let milliDef    = PrefixDefinition "milli" 1e-3 ["m"]
           inchDef     = BaseDefinition "inch" "length" ["in"]
           minDef      = BaseDefinition "minute" "time" ["min"]
-          inchMinDict = makeDefinitions [milliDef, inchDef, minDef]
+          (Right inchMinDict) = makeDefinitions [milliDef, inchDef, minDef]
       it "handles min/milliinch ambiguity" $ do
         let (pr, sym) = prefixParser inchMinDict "min"
         pr `shouldBe` ""

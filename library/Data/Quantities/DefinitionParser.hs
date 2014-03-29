@@ -72,7 +72,7 @@ parseBaseLine = do
 parseBase :: Parser (Symbol, Symbol)
 parseBase = do
   sym <- parseSymbol <* spaces <* char '='
-  b <- spaces >> char '[' >> parseSymbol <* char ']'
+  b <- spaces >> char '[' >> option "" parseSymbol <* char ']'
   spaces
   -- skipMany comment
   return (sym, b)
@@ -87,7 +87,7 @@ parsePrefixLine = do
 
 parsePrefix :: Parser (Symbol, Double)
 parsePrefix = do
-  pre <- parseSymbol <* char '-' <* spaces <* char '='
+  pre <- many1 letter <* char '-' <* spaces <* char '='
   facQuant <- spaces >> parseExpr
   spaces
   if null (units facQuant) then
@@ -101,4 +101,7 @@ parsePrefixSynonym = spaces >> char '=' >> spaces >> parseSymbol <* char '-' <* 
 
 -- | Parse a symbol for a unit
 parseSymbol :: Parser Symbol
-parseSymbol = many1 (letter <|> char '_')
+parseSymbol = do
+  letter' <- letter
+  rest    <- many (alphaNum <|> char '_')
+  return $ letter' : rest

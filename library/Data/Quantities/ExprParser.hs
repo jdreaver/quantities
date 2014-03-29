@@ -79,10 +79,11 @@ parseSymbolNum = try parseNum <|> parseSymbol'
 
 parseSymbol' :: Parser Quantity
 parseSymbol' = do
-  neg <- option "" $ string "-"
-  sym <- many1 (letter <|> char '_')
+  neg  <- option "" $ string "-"
+  symf <- letter
+  rest <- many (alphaNum <|> char '_')
   _ <- spaces'
-  return $ baseQuant (timesSign neg 1) [SimpleUnit sym "" 1]
+  return $ baseQuant (timesSign neg 1) [SimpleUnit (symf : rest) "" 1]
 
 parseNum :: Parser Quantity
 parseNum = do

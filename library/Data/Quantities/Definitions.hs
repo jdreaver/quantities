@@ -8,36 +8,51 @@ import qualified Text.ParserCombinators.Parsec as P
 import Data.Quantities.Convert (convertBase')
 import Data.Quantities.Data
 
+type DefineMonad = StateT Definitions (Either QuantityError)
+makeDefinitions :: [Definition] -> Either QuantityError Definitions
+makeDefinitions ds = execStateT (mapM addDefinition ds) emptyDefinitions
 
-makeDefinitions :: [Definition] -> Definitions
-makeDefinitions ds = execState (mapM addDefinition ds) emptyDefinitions
+addDefinition :: Definition -> DefineMonad ()
 
-addDefinition :: Definition -> State Definitions ()
+addDefinition (PrefixDefinition sym fac syns) = do
+  d <- get
+  let newd = emptyDefinitions {
+        prefixes         = sym : syns
+        , prefixValues   = M.singleton sym fac
+        , prefixSynonyms = M.fromList $ zip (sym : syns) (repeat sym) }
+  if sym `elem` prefixes d then
+    lift . Left . PrefixAlreadyDefinedError $ sym ++ "-"
+    else
+    put $ d `unionDefinitions` newd
 
-addDefinition (PrefixDefinition sym fac syns) = modify $
-  unionDefinitions emptyDefinitions {
-    prefixes         = sym : syns
-    , prefixValues   = M.singleton sym fac
-    , prefixSynonyms = M.fromList $ zip (sym : syns) (repeat sym) }
-
-addDefinition (BaseDefinition sym utype syns) = modify $
-  unionDefinitions emptyDefinitions {
-  bases         = M.singleton sym (1, [SimpleUnit sym "" 1])
-  , unitsList   = sym : syns
-  , synonyms    = M.fromList $ zip (sym : syns) (repeat sym)
-  , unitTypes   = M.singleton sym utype }
+addDefinition (BaseDefinition sym utype syns) = do
+  d <- get
+  if sym `elem` unitsList d then
+    lift . Left $ UnitAlreadyDefinedError sym
+    else
+    put $ d `unionDefinitions` emptyDefinitions {
+      bases         = M.singleton sym (1, [SimpleUnit sym "" 1])
+      , unitsList   = sym : syns
+      , synonyms    = M.fromList $ zip (sym : syns) (repeat sym)
+      , unitTypes   = M.singleton sym utype }
 
 addDefinition (UnitDefinition sym q syns) = do
   -- First, we preprocess the quantity so all units are base units and
   -- prefixes are preprocessed. Then we do the standard Definitions
   -- modification like prefix and base definitions.
   d <- get
-  let (Right pq) = preprocessQuantity d q
-      (Quantity baseFac baseUnits _) = convertBase' d pq
-  modify $ unionDefinitions emptyDefinitions {
-    bases         = M.singleton sym (baseFac, baseUnits)
-    , synonyms    = M.fromList $ zip (sym : syns) (repeat sym)
-    , unitsList   = sym : syns }
+  let pq = preprocessQuantity d q
+  if sym `elem` unitsList d then
+    lift . Left $ UnitAlreadyDefinedError sym
+    else
+    case pq  of
+      (Right pq') -> do
+        let (Quantity baseFac baseUnits _) = convertBase' d pq'
+        put $ d `unionDefinitions` emptyDefinitions {
+          bases         = M.singleton sym (baseFac, baseUnits)
+          , synonyms    = M.fromList $ zip (sym : syns) (repeat sym)
+          , unitsList   = sym : syns }
+      (Left err) -> lift . Left $ err
 
 -- Convert prefixes and synonyms
 preprocessQuantity :: Definitions -> Quantity -> Either QuantityError Quantity
