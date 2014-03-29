@@ -302,7 +302,7 @@ defaultDefinitions' = unlines [
   ,"imperial_cup = imperial_pint / 2 = UK_cup"
   ,"imperial_gill = imperial_cup / 2 = UK_gill"
   ,"imperial_floz = imperial_gill / 5 = UK_fluid_ounce = imperial_fluid_ounce"
-  ,"barrel = 42 * gallon = bbl = US_liquid_gallon"
+  ,"barrel = 42 * gallon = bbl"
   ,"tablespoon = floz / 2 = tbsp = Tbsp = Tblsp = tblsp = tbs = Tbl"
   ,"teaspoon = tablespoon / 3 = tsp"
   ,"peck = bushel / 4 = pk"
