@@ -1,7 +1,7 @@
 module Data.Quantities.Definitions where
 
 import Control.Monad.State
-import Data.Either (lefts, rights)
+import Data.Either (partitionEithers)
 import qualified Data.Map as M
 import qualified Data.Set as S
 import qualified Text.ParserCombinators.Parsec as P
@@ -63,11 +63,10 @@ checkDefined a b = S.toList $ S.intersection (S.fromList a) (S.fromList b)
 -- Convert prefixes and synonyms
 preprocessQuantity :: Definitions -> Quantity -> Either QuantityError Quantity
 preprocessQuantity d (Quantity x us _)
-  | null errors = Right $ Quantity x goodUnits d
-  | otherwise   = Left  $ head errors
-    where ppUnits   = map (preprocessUnit d) us
-          goodUnits = rights ppUnits
-          errors    = lefts ppUnits
+  | null errs = Right $ Quantity x us' d
+  | otherwise = Left  $ head errs
+    where ppUnits     = map (preprocessUnit d) us
+          (errs, us') = partitionEithers ppUnits
 
 preprocessUnit :: Definitions -> SimpleUnit -> Either QuantityError SimpleUnit
 preprocessUnit d (SimpleUnit s _ p)

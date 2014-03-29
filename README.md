@@ -11,3 +11,6 @@ Unit conversion and manipulation library for Haskell.
 * Add line numbers to definition parser
 * Check that synonyms aren't already defined too
 * Handle temperature!
+* Write a test that groups units by base (length, volume, 1/time, etc)
+  and does an n^2 conversion between all units in the groups.
+* Create unit computation monad so we don't check Either's for every function.
