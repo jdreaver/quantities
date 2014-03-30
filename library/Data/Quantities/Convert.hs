@@ -69,7 +69,8 @@ subtractQuants :: Quantity -> Quantity -> Either QuantityError Quantity
 subtractQuants = linearQuants (-)
 
 
-linearQuants :: (Double -> Double -> Double) -> Quantity -> Quantity -> Either QuantityError Quantity
+linearQuants :: (Double -> Double -> Double) -> Quantity -> Quantity
+                -> Either QuantityError Quantity
 linearQuants f (Quantity m1 u1 d) q2 = case q of
   (Right q') -> Right $ Quantity (f m1 (magnitude q')) u1 d
   (Left err) -> Left err
