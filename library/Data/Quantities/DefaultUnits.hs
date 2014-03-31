@@ -1,17 +1,28 @@
-module Data.Quantities.DefaultUnits where
+module Data.Quantities.DefaultUnits (defaultDefString) where
 
-import Data.Quantities.Data (Definitions)
-import Data.Quantities.DefinitionParser (readDefinitions)
-import Data.Quantities.Definitions (makeDefinitions)
+-- | View the source code for this declaration to see what units and prefixes
+-- are defined.
+--
+-- This string holds the definitions for units and prefixes. Base units are
+-- defined by the name of the unit, the name of the base in brackets, and any
+-- aliases for the unit after that, all separated by equal signs: @meter =
+-- [length] = m@. Prefixes are defined by placing a dash after all identifiers,
+-- and providing a value for the prefix: @milli- = 1e-3 = m-@. Other units are
+-- defined by using /previously defined units/ in an expression: @minute = 60 *
+-- second = min@.
+--
+-- The reason these definitions aren't placed in a text file is so you don't
+-- have to operate your whole program in the IO monad. Theoretically, a user of
+-- this package can create their own definitions file or modify this one, but a
+-- mechanism for doing so hasn't been created yet.
+--
+-- These definitions are taken almost verbatim from the Pint unit conversion
+-- library for the Python programming language. Check them out on
+-- <https://github.com/hgrecco/pint GitHub>.
+defaultDefString :: String
+defaultDefString = unlines [
 
--- These definitions are taken almost verbatim from the Pint unit
--- conversion library for the Python programming language. Check them
--- out at https://github.com/hgrecco/pint.
-
-defaultDefinitions' :: String
-defaultDefinitions' = unlines [
-
--- decimal prefixes
+  -- decimal prefixes
   "yocto- = 1e-24 = y-"
   ,"zepto- = 1e-21 = z-"
   ,"atto- =  1e-18 = a-"
@@ -310,17 +321,16 @@ defaultDefinitions' = unlines [
   ,"firkin = barrel / 4"
    ]
 
-otherDefinitions :: Definitions
-(Right otherDefinitions) = makeDefinitions $ readDefinitions $ unlines [
+-- otherDefinitions :: String
+-- otherDefinitions = unlines [
+--   -- Heat
+--   "RSI = degK * meter ** 2 / watt"
+--   ,"clo = 0.155 * RSI = clos"
+--   ,"R_value = foot ** 2 * degF * hour / btu"
 
-   -- Heat
-   --RSI = degK * meter ** 2 / watt
-   --clo = 0.155 * RSI = clos
-   --R_value = foot ** 2 * degF * hour / btu
+--    -- Temperature
+--   ,"degR = 9 / 5 * degK; offset: 0 = rankine"
+--   ,"degC = degK; offset: 273.15 = celsius = C"
+--   ,"degF = 9 / 5 * degK; offset: 255.372222 = fahrenheit = F"
 
-   -- Temperature
-  "degR = 9 / 5 * degK; offset: 0 = rankine"
-  ,"degC = degK; offset: 273.15 = celsius = C"
-  ,"degF = 9 / 5 * degK; offset: 255.372222 = fahrenheit = F"
-
-  ]
+--   ]

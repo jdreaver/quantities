@@ -10,11 +10,17 @@ unityQuant :: Definitions -> Quantity
 unityQuant = Quantity 1 []
 
 -- | Convert quantity to given units.
+--
+-- >>> convert <$> fromString "m" <*> unitsFromString "ft"
+-- Right (Right 3.280839895013123 foot)
 convert :: Quantity -> CompositeUnit -> Either QuantityError Quantity
 convert x = convert' (defs x) x
 
 
 -- | Convert a quantity to its base units.
+--
+-- >>> convertBase <$> fromString "newton"
+-- Right 1000.0 gram meter / second ** 2.0
 convertBase :: Quantity -> Quantity
 convertBase x = convertBase' (defs x) x
 
@@ -50,6 +56,9 @@ simpleToBase d (SimpleUnit sym pre pow) = Quantity m us d
 
 
 -- | Computes dimensionality of quantity.
+--
+-- >>> dimensionality <$> fromString "newton"
+-- Right [length,mass,time ** -2.0]
 dimensionality :: Quantity -> CompositeUnit
 dimensionality q = dimensionality' (defs q) (units q)
 
@@ -59,12 +68,14 @@ dimensionality' d us = sort $ map dim ub
         dim (SimpleUnit sym _ pow) = SimpleUnit (unitTypes d M.! sym) "" pow
 
 
--- | Adds two quantities.
+-- | Adds two quantities. Second quantity is converted to units of
+-- first quantity.
 addQuants :: Quantity -> Quantity -> Either QuantityError Quantity
 addQuants = linearQuants (+)
 
 
--- | Subtract two quantities.
+-- | Subtract two quantities. Second quantity is converted to units of
+-- first quantity.
 subtractQuants :: Quantity -> Quantity -> Either QuantityError Quantity
 subtractQuants = linearQuants (-)
 

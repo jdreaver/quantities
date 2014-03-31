@@ -4,13 +4,16 @@
 
 Unit conversion and manipulation library for Haskell.
 
+## Documentation
+
+Check out the docs on [Hackage](http://hackage.haskell.org/package/quantities).
+
 ## TODO
 
+* Don't require Double for Quantity. Use any numeric magnitude.
+* Open up expression parser to public API. Make sure definitions parser uses an
+  expression parser without addition or subtraction.
+* Allow users to use their own definitions file.
 * Add ability to create units out of order; base quantity does not
   already have to be defined, as long as it is defined in the file.
-* Add line numbers to definition parser
-* Check that synonyms aren't already defined too
-* Handle temperature!
-* Write a test that groups units by base (length, volume, 1/time, etc)
-  and does an n^2 conversion between all units in the groups.
-* Create unit computation monad so we don't check Either's for every function.
+* Handle temperature.

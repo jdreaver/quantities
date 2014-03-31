@@ -7,9 +7,10 @@ import qualified Data.Map as M
 -- | String representation of a unit. Examples: "meter", "foot"
 type Symbol = String
 
--- | Representation of single unit. For example: millimeter^2 is
--- represented as SimpleUnit { symbol = "meter", prefix = "milli",
--- power = 2.0 }
+-- | Representation of single unit. For example: \"mm^2\" is
+-- represented as
+--
+-- > SimpleUnit { symbol = "meter", prefix = "milli", power = 2.0 }
 data SimpleUnit = SimpleUnit { symbol :: String
                              , prefix :: String
                              , power  :: Double} deriving (Eq, Ord)
@@ -41,14 +42,22 @@ showCompUnit' (SimpleUnit s pr p)
 
 -- | Combination of magnitude and units.
 data Quantity = Quantity { magnitude :: Double
+                           -- ^ Numerical magnitude of quantity.
+                           --
+                           -- >>> magnitude <$> fromString "100 N * m"
+                           -- Right 100.0
                          , units     :: CompositeUnit
+                           -- ^ Units associated with quantity.
+                           --
+                           -- >>> units <$> fromString "3.4 m/s^2"
+                           -- Right [meter,second ** -2.0]
                          , defs      :: Definitions } deriving (Ord)
 
 
 instance Show Quantity where
   show (Quantity m us _) = show m ++ " " ++ showCompUnit us
 
--- | Sort units but put negative units at end
+-- | Sort units but put negative units at end.
 showSort :: CompositeUnit -> CompositeUnit
 showSort c = pos ++ neg
   where (pos, neg) = partition (\q -> power q > 0) c
@@ -66,21 +75,52 @@ fromDefinitions d m u = Quantity m u d
 
 -- | Custom error type
 data QuantityError = UndefinedUnitError String
+                     -- ^ Used when trying to parse an undefined unit.
                    | DimensionalityError CompositeUnit CompositeUnit
+                     -- ^ Used when converting units that do not have the same
+                     -- dimensionality (example: convert meter to second).
                    | UnitAlreadyDefinedError String
+                     -- ^ Used internally when defining units and a unit is
+                     -- already defined.
                    | PrefixAlreadyDefinedError String
+                     -- ^ Used internally when defining units and a prefix is
+                     -- already defined.
+                   | ParserError String
+                     -- ^ Used when a string cannot be parsed.
                    deriving (Show, Eq)
 
 
-reduceUnits, reduceUnits', removeZeros :: CompositeUnit -> CompositeUnit
--- | Combines equivalent units and removes units with powers of zero.
-reduceUnits  = removeZeros . reduceUnits' . sort
+-- | Computation monad that propagates 'QuantityError's. Some examples:
+--
+-- > computation :: QuantityComputation Quantity
+-- > computation = do
+-- >   x <- fromString "mile/hr"
+-- >   y <- unitsFromString "m/s"
+-- >   convert x y
+--
+-- Returns @Right 0.44704 meter / second@
+--
+-- > computation :: QuantityComputation Quantity
+-- > computation = do
+-- >   x <- fromString "BADUNIT"
+-- >   convertBase x
+--
+-- Returns @Left (UndefinedUnitError "BADUNIT")@
 
-reduceUnits' [] = []
-reduceUnits' (SimpleUnit x pr1 p1 : SimpleUnit y pr2 p2: xs)
-  | (x,pr1) == (y,pr2) = SimpleUnit x pr1 (p1+p2) : reduceUnits' xs
-  | otherwise = SimpleUnit x pr1 p1 : reduceUnits' (SimpleUnit y pr2 p2 : xs)
-reduceUnits' (x:xs) = x : reduceUnits' xs
+type QuantityComputation = Either QuantityError
+
+-- | Combines equivalent units and removes units with powers of zero.
+reduceUnits :: Quantity -> Quantity
+reduceUnits q = q { units = reduceUnits' (units q) }
+
+reduceUnits', removeZeros :: CompositeUnit -> CompositeUnit
+reduceUnits'  = removeZeros . reduceComp . sort
+  where reduceComp [] = []
+        reduceComp (SimpleUnit x pr1 p1 : SimpleUnit y pr2 p2: xs)
+          | (x,pr1) == (y,pr2) = SimpleUnit x pr1 (p1+p2) : reduceComp xs
+          | otherwise = SimpleUnit x pr1 p1 : reduceComp (SimpleUnit y pr2 p2 : xs)
+        reduceComp (x:xs) = x : reduceComp xs
+
 
 removeZeros [] = []
 removeZeros (SimpleUnit _ _ 0.0 : xs) = removeZeros xs
@@ -93,23 +133,21 @@ invertUnits = map invertSimpleUnit
 invertSimpleUnit :: SimpleUnit -> SimpleUnit
 invertSimpleUnit (SimpleUnit s pr p) = SimpleUnit s pr (-p)
 
--- | Multiplies Quantities by appending their units and multiplying
--- magnitudes.
+-- | Multiplies two quantities.
 multiplyQuants :: Quantity -> Quantity -> Quantity
-multiplyQuants x y = Quantity mag newUnits (defs x)
+multiplyQuants x y = reduceUnits $ Quantity mag newUnits (defs x)
   where mag      = magnitude x * magnitude y
-        newUnits = reduceUnits (units x ++ units y)
+        newUnits = units x ++ units y
 
--- | Divides Quantities by inverting the units of the second argument,
--- appending the units, and dividing the magnitudes.
+-- | Divides two quantities.
 divideQuants :: Quantity -> Quantity -> Quantity
-divideQuants x y = Quantity mag newUnits (defs x)
+divideQuants x y = reduceUnits $ Quantity mag newUnits (defs x)
   where mag      = magnitude x / magnitude y
-        newUnits = reduceUnits (units x ++ invertUnits (units y))
+        newUnits = units x ++ invertUnits (units y)
 
--- | expt for Quantities.
+-- | Exponentiates a quantity with a double.
 exptQuants :: Quantity -> Double -> Quantity
-exptQuants (Quantity x u d) y = Quantity (x**y) (expUnits u) d
+exptQuants (Quantity x u d) y = reduceUnits $ Quantity (x**y) (expUnits u) d
   where expUnits = map (\(SimpleUnit s pr p) -> SimpleUnit s pr (p*y))
 
 

@@ -31,7 +31,8 @@ spec = do
 
     describe "Reduce units" $ do
       it "should work" $ do
-        (reduceUnits . replicate 2) mm2 `shouldBe` [mm2 {power=4}]
+        let rmm2 = baseQuant 1 (replicate 2 mm2)
+        units (reduceUnits rmm2) `shouldBe` [mm2 {power=4}]
 
     describe "invertSimpleUnit" $ do
       it "should put unit in denominator" $ do
