@@ -10,11 +10,11 @@ spec :: Spec
 spec = do
   describe "parseQuant" $ do
     it "parses simple unit" $ do
-      let (Right m) = parseQuant "m"
+      let (Right m) = fromString "m"
       magnitude m `shouldBe` 1
       units m `shouldBe` [SimpleUnit "meter" "" 1]
 
   describe "parseUnit" $ do
     it "parses simple unit" $ do
-      let (Right m) = parseUnits "m"
+      let (Right m) = unitsFromString "m"
       m `shouldBe` [SimpleUnit "meter" "" 1]
