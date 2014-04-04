@@ -90,7 +90,7 @@ data QuantityError = UndefinedUnitError String
                    deriving (Show, Eq)
 
 
--- | Computation monad that propagates 'QuantityError's. Some examples:
+-- | Useful for monadic computations with 'QuantityError's. Some examples:
 --
 -- > computation :: QuantityComputation Quantity
 -- > computation = do
