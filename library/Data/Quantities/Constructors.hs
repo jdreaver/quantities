@@ -3,12 +3,11 @@ module Data.Quantities.Constructors where
 import Data.Quantities.Data (Definitions, CompositeUnit, Quantity(units),
                              QuantityError(..))
 import Data.Quantities.DefaultUnits (defaultDefString)
-import Data.Quantities.DefinitionParser (readDefinitions)
-import Data.Quantities.Definitions (makeDefinitions)
+import Data.Quantities.Definitions (readDefinitions)
 import Data.Quantities.ExprParser (parseExprQuant)
 
 defaultDefinitions :: Either QuantityError Definitions
-defaultDefinitions = makeDefinitions $ readDefinitions defaultDefString
+defaultDefinitions = readDefinitions defaultDefString
 
 d :: Definitions
 (Right d) = defaultDefinitions
@@ -31,6 +30,16 @@ d :: Definitions
 -- Left (ParserError "Used non-dimensionless exponent in ( Right 1.0 meter ) ** ( Right 2.0 second )")
 fromString :: String -> Either QuantityError Quantity
 fromString = parseExprQuant d
+
+-- | Create quantities with custom definitions.
+--
+-- > (Right d) = readDefinitions myDefString
+-- > myFromString = fromString' d
+--
+-- >>> myFromString "25 m/s"
+-- Right 25.0 meter / second
+fromString' :: Definitions -> String -> Either QuantityError Quantity
+fromString' = parseExprQuant
 
 
 -- | Parse units from a string. Equivalent to @fmap units . fromString@

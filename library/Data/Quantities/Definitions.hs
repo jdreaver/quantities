@@ -6,7 +6,13 @@ import qualified Data.Set as S
 
 import Data.Quantities.Convert (convertBase')
 import Data.Quantities.Data
+import Data.Quantities.DefinitionParser (parseDefinitions)
 import Data.Quantities.ExprParser (preprocessQuantity)
+
+-- | Convert string of definitions into 'Definitions' structure. See source
+-- code for 'Data.Quantities.defaultDefString' for an example.
+readDefinitions :: String -> Either QuantityError Definitions
+readDefinitions = makeDefinitions . parseDefinitions
 
 type DefineMonad = StateT Definitions (Either QuantityError)
 makeDefinitions :: [Definition] -> Either QuantityError Definitions

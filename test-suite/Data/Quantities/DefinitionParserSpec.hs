@@ -8,9 +8,9 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-    describe "readDefinitions" $ do
+    describe "parseDefinitions" $ do
       let mLine    = "milli- = 1e-3 = m-"
-          milli    = head $ readDefinitions mLine
+          milli    = head $ parseDefinitions mLine
           milliDef = PrefixDefinition "milli" 1e-3 ["m"]
 
       it "read prefix definition" $ do
@@ -18,7 +18,7 @@ spec = do
 
 
       let lenLine = "meter = [length] = m"
-          len     = head $ readDefinitions lenLine
+          len     = head $ parseDefinitions lenLine
           lenDef  = BaseDefinition "meter" "length" ["m"]
 
       it "read base definition" $ do
@@ -26,7 +26,7 @@ spec = do
 
 
       let feetLine = "foot = 3.21 m = ft = feet"
-          feet     = head $ readDefinitions feetLine
+          feet     = head $ parseDefinitions feetLine
           feetDef  = UnitDefinition "foot" q ["ft", "feet"]
           q        = baseQuant 3.21 [SimpleUnit "m" "" 1]
 
@@ -38,4 +38,4 @@ spec = do
           allDefs  = [milliDef, lenDef, feetDef]
 
       it "read multiple definitions" $ do
-        readDefinitions allLines `shouldBe` allDefs
+        parseDefinitions allLines `shouldBe` allDefs

@@ -3,8 +3,7 @@ module Data.Quantities.ConvertSpec (spec) where
 import Data.Quantities.Convert
 import Data.Quantities.Data (fromDefinitions, SimpleUnit(..), Quantity(..),
                              CompositeUnit, Definitions, QuantityError(..))
-import Data.Quantities.DefinitionParser (readDefinitions)
-import Data.Quantities.Definitions (makeDefinitions)
+import Data.Quantities.Definitions (readDefinitions)
 import Test.Hspec
 
 {-# ANN module "HLint: ignore Redundant do" #-}
@@ -13,7 +12,7 @@ defaultQuant :: Double -> CompositeUnit -> Quantity
 defaultQuant = fromDefinitions testDefs
 
 testDefs :: Definitions
-(Right testDefs) = makeDefinitions $ readDefinitions $ unlines [
+(Right testDefs) = readDefinitions $ unlines [
   "milli- = 1e-3  = m-"
   ,"centi- = 1e-2  = c-"
   -- ,"kilo- =  1e3   = k-"

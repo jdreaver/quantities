@@ -15,6 +15,7 @@ module Data.Quantities
          -- $constructors
          fromString
        , unitsFromString
+       , Definitions
        , Quantity
        , magnitude
        , units
@@ -32,24 +33,30 @@ module Data.Quantities
        , multiplyQuants
        , divideQuants
        , exptQuants
+         -- * Custom definitions
+         -- $custom-defs
+       , fromString'
+       , readDefinitions
+       , defaultDefString
          -- * Error type
        , QuantityError(..)
        , QuantityComputation
-       , comp
        ) where
 
 
-import Data.Quantities.Constructors (fromString, unitsFromString)
+import Data.Quantities.Constructors (fromString, fromString', unitsFromString)
 import Data.Quantities.Convert (convert, convertBase, addQuants, subtractQuants,
                                 dimensionality)
 import Data.Quantities.Data
+import Data.Quantities.Definitions (readDefinitions)
+import Data.Quantities.DefaultUnits (defaultDefString)
 
 -- $constructors
 --
 -- Currently, one constructor is supported to create quantities: 'fromString'.
 -- There is an included expression parser that can parse values and strings
 -- corresponding to builtin units. To view defined unit types, look at the
--- /source code/ for 'Data.Quantities.DefaultUnits.defaultDefString'.
+-- /source code/ for 'defaultDefString'.
 
 -- $conversion
 --
@@ -85,8 +92,27 @@ import Data.Quantities.Data
 -- >>> x `exptQuants` 0
 -- 1.0
 
-comp :: QuantityComputation Quantity
-comp = do
-  x <- fromString "BADUNIT"
-  y <- unitsFromString "m/s"
-  convert x y
+
+-- $custom-defs
+--
+-- You don't have to use the default definitions provided by
+-- 'defaultDefString'. Here is an example of adding a new unit called
+-- @metric_foot@.
+--
+-- > myDefString = defaultDefString ++ "\n" ++ "metric_foot = 300mm"
+-- > (Right d') = readDefinitions myDefString
+-- > myFromString = fromString' d'
+--
+-- >>> myFromString "metric_foot"
+-- Right 1.0 metric_foot
+-- >>> convertBase <$> myFromString "metric_foot"
+-- Right 0.3 meter
+--
+-- It is usually much easier to copy the source code for 'defaultDefString' and
+-- add your definitions in the appropriate spot (for example, put @metric_foot@
+-- next to the other unit definitions). Then, use 'fromString'' to create your
+-- Quantity constructor.
+--
+-- NOTE: It is very important not to perform conversions on two quantities from
+-- different Definitions. Most of the error checking for undefined units is
+-- done when a unit is created, and not when performing conversions.

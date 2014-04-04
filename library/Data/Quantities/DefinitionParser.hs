@@ -10,18 +10,18 @@ import Data.Quantities.ExprParser (parseMultExpr)
 
 main :: IO ()
 main = do
-  defs <- readDefinitions <$> head <$> getArgs
+  defs <- parseDefinitions <$> head <$> getArgs
   print defs
 
 -- | Parse multiline string of definitions (say, from a file) into a
 -- list of definitions.
-readDefinitions :: String -> [Definition]
-readDefinitions input = case parse readDefinitions' "Input File Parser" input of
+parseDefinitions :: String -> [Definition]
+parseDefinitions input = case parse parseDefinitions' "Input File Parser" input of
   Left err -> error (show err) >> []
   Right val -> val
 
-readDefinitions' :: Parser [Definition]
-readDefinitions' = many parseDef <* eof
+parseDefinitions' :: Parser [Definition]
+parseDefinitions' = many parseDef <* eof
 
 -- | Parse any definition line
 parseDef :: Parser Definition

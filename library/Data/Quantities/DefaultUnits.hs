@@ -1,7 +1,7 @@
 module Data.Quantities.DefaultUnits (defaultDefString) where
 
 -- | View the source code for this declaration to see what units and prefixes
--- are defined.
+-- are defined by default.
 --
 -- This string holds the definitions for units and prefixes. Base units are
 -- defined by the name of the unit, the name of the base in brackets, and any
