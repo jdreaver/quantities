@@ -1,55 +1,61 @@
 module Data.Quantities.ExprParserSpec (spec) where
 
+import Data.Either
+
+import Data.Quantities.Constructors (d)
+import Data.Quantities.Data
+import Data.Quantities.Definitions
 import Data.Quantities.ExprParser
-import Data.Quantities.Data (baseQuant, CompositeUnit, Quantity, SimpleUnit(..))
+
 import Test.Hspec
 
 {-# ANN module "HLint: ignore Redundant do" #-}
 
-makeRightQuant :: Double -> CompositeUnit -> Either String Quantity
-makeRightQuant m u = Right (baseQuant m u)
+isLeft :: Either a b -> Bool
+isLeft = null . rights . return
 
 spec :: Spec
 spec = do
-    describe "readExpr" $ do
-      it "parses numbers" $ do
-        parseExprQuant "1"  `shouldBe` makeRightQuant 1  []
-        parseExprQuant "-2" `shouldBe` makeRightQuant (-2) []
-        parseExprQuant "1e3"  `shouldBe` makeRightQuant 1e3  []
-        parseExprQuant "-1e3"  `shouldBe` makeRightQuant (-1e3)  []
+    let m2    = SimpleUnit "m" "" 2
+        ppm2  = SimpleUnit "meter" "" 2
+        mm2   = SimpleUnit "mm" "" 2
+        ppmm2 = SimpleUnit "meter" "milli" 2
+        bad   = SimpleUnit "asdfdsaf" "" 2
 
-      it "parses addition" $ do
-        parseExprQuant "1+1"  `shouldBe` makeRightQuant 1  []
+    describe "preprocessUnit" $ do
+      it "handles base" $ do
+        let (Right computed) = preprocessUnit d m2
+        computed  `shouldBe` ppm2
 
-      it "parses units" $ do
-        let m = SimpleUnit "m" "" 1
-        parseExprQuant "m"  `shouldBe` makeRightQuant 1 [m]
-        parseExprQuant "-m"  `shouldBe` makeRightQuant (-1) [m]
+      it "handles prefix" $ do
+        let (Right computed) = preprocessUnit d mm2
+        computed `shouldBe` ppmm2
 
-      it "parses multiple units" $ do
-        let m = SimpleUnit "m" "" 1
-            s = SimpleUnit "s" "" 1
-        parseExprQuant "m*s"  `shouldBe` makeRightQuant 1 [m, s]
+      it "rejects bad unit" $ do
+        let ret = preprocessUnit d bad
+        isLeft ret `shouldBe` True
 
-      it "parses division" $ do
-        let m = SimpleUnit "m" "" 1
-            s = SimpleUnit "s" "" 1
-        parseExprQuant "m/s"  `shouldBe` makeRightQuant 1 [m, s { power = -1 }]
+    let qm2 = baseQuant 3 [m2]
+    describe "preprocessQuantity" $ do
+      it "doesn't need own dict" $ do
+        let (Right computed) = preprocessQuantity d qm2
+        computed  `shouldBe` baseQuant 3 [ppm2]
 
-      it "parses implicit multiplication" $ do
-        let ft = SimpleUnit "ft" "" 1
-            sec = SimpleUnit "sec" "" 1
-        parseExprQuant "ft sec"  `shouldBe` makeRightQuant 1 [ft, sec]
-        parseExprQuant "(ft) -sec"  `shouldBe` makeRightQuant (-1) [ft, sec]
 
-      it "parses exponentiation" $ do
-        let m2 = SimpleUnit "m" "" 2
-        parseExprQuant "m^2"  `shouldBe` makeRightQuant 1 [m2]
-        parseExprQuant "m**2"  `shouldBe` makeRightQuant 1 [m2]
+    describe "prefixParser" $ do
+      let hectDef    = PrefixDefinition "hecto" 1e-3 ["h"]
+          hrDef      = BaseDefinition "hour" "time" ["h", "hr"]
+          (Right hectHrDict) = makeDefinitions [hectDef, hrDef]
+      it "handles hecto/hr ambiguity" $ do
+        let (pr, sym) = prefixParser hectHrDict "hr"
+        pr `shouldBe` ""
+        sym `shouldBe` "hr"
 
-      it "parses complex expressions" $ do
-        let m = SimpleUnit "m" "" 1
-            ft = SimpleUnit "ft" "" 1
-            sn1 = SimpleUnit "s" "" (-1)
-        parseExprQuant "100m*ft/s"  `shouldBe` makeRightQuant 100 [m, ft, sn1]
-        parseExprQuant "(50 m) / s"  `shouldBe` makeRightQuant 50 [m, sn1]
+      let milliDef    = PrefixDefinition "milli" 1e-3 ["m"]
+          inchDef     = BaseDefinition "inch" "length" ["in"]
+          minDef      = BaseDefinition "minute" "time" ["min"]
+          (Right inchMinDict) = makeDefinitions [milliDef, inchDef, minDef]
+      it "handles min/milliinch ambiguity" $ do
+        let (pr, sym) = prefixParser inchMinDict "min"
+        pr `shouldBe` ""
+        sym `shouldBe` "min"

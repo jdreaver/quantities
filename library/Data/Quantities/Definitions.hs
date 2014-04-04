@@ -1,13 +1,12 @@
 module Data.Quantities.Definitions where
 
 import Control.Monad.State
-import Data.Either (partitionEithers)
 import qualified Data.Map as M
 import qualified Data.Set as S
-import qualified Text.ParserCombinators.Parsec as P
 
 import Data.Quantities.Convert (convertBase')
 import Data.Quantities.Data
+import Data.Quantities.ExprParser (preprocessQuantity)
 
 type DefineMonad = StateT Definitions (Either QuantityError)
 makeDefinitions :: [Definition] -> Either QuantityError Definitions
@@ -59,34 +58,3 @@ addDefinition (UnitDefinition sym q syns) = do
 -- | Computes intersection of two lists
 checkDefined :: [Symbol] -> [Symbol] -> [Symbol]
 checkDefined a b = S.toList $ S.intersection (S.fromList a) (S.fromList b)
-
--- Convert prefixes and synonyms
-preprocessQuantity :: Definitions -> Quantity -> Either QuantityError Quantity
-preprocessQuantity d (Quantity x us _)
-  | null errs = Right $ Quantity x us' d
-  | otherwise = Left  $ head errs
-    where ppUnits     = map (preprocessUnit d) us
-          (errs, us') = partitionEithers ppUnits
-
-preprocessUnit :: Definitions -> SimpleUnit -> Either QuantityError SimpleUnit
-preprocessUnit d (SimpleUnit s _ p)
-  | rs `elem` unitsList d = Right $ SimpleUnit ns np p
-  | otherwise             = Left  $ UndefinedUnitError s
-  where (rp, rs) = prefixParser d s
-        np       = prefixSynonyms d M.! rp
-        ns       = synonyms d M.! rs
-
-
-prefixParser :: Definitions -> String -> (String, String)
-prefixParser d input = if input `elem` unitsList d
-                          then ("", input)
-                          else case P.parse (prefixParser' d) "arithmetic" input of
-                            Left _ -> ("", input)
-                            Right val -> splitAt (length val) input
-
-
-prefixParser' :: Definitions -> P.Parser String
-prefixParser' d = do
-  pr <- P.choice $ map (P.try . P.string) (prefixes d)
-  _  <- P.choice $ map (P.try . P.string) (unitsList d)
-  return pr

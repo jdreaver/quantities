@@ -6,7 +6,7 @@
 -- with which to parse strings into a Quantity datatype. Once created, a
 -- quantity can be converted to different units or queried for its
 -- dimensionality. A user can also operate on quantities arithmetically, and
--- doing so uses automatic unit conversion and simplifcation.
+-- doing so uses automatic unit conversion and simplification.
 
 
 module Data.Quantities

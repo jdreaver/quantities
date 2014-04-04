@@ -13,7 +13,7 @@ type Symbol = String
 -- > SimpleUnit { symbol = "meter", prefix = "milli", power = 2.0 }
 data SimpleUnit = SimpleUnit { symbol :: String
                              , prefix :: String
-                             , power  :: Double} deriving (Eq, Ord)
+                             , power  :: Double } deriving (Eq, Ord)
 
 instance Show SimpleUnit where
   show (SimpleUnit s pr p)

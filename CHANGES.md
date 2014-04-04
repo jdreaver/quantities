@@ -1,7 +1,14 @@
 quantities changelog
 ====================
 
-0.1 (unreleased)
+
+0.2 (unreleased)
+----------------
+
+- Can handle arithmetical expressions in fromString
+
+
+0.1 (3-31-2014)
 ----------------
 
 - Full implementation of multiplicative dimensional quantities (no offsets yet

@@ -5,7 +5,7 @@ import System.Environment
 import Text.ParserCombinators.Parsec
 
 import Data.Quantities.Data (Definition (..), Symbol, units, magnitude)
-import Data.Quantities.ExprParser (parseExpr)
+import Data.Quantities.ExprParser (parseMultExpr)
 
 
 main :: IO ()
@@ -52,7 +52,7 @@ parseDefLine = do
 parseUnitDef :: Parser Definition
 parseUnitDef = do
   sym   <- parseSymbol <* spaces <* char '='
-  quant <- parseExpr
+  quant <- parseMultExpr
   spaces
   -- skipMany comment
   return $ UnitDefinition sym quant []
@@ -88,7 +88,7 @@ parsePrefixLine = do
 parsePrefix :: Parser (Symbol, Double)
 parsePrefix = do
   pre <- many1 letter <* char '-' <* spaces <* char '='
-  facQuant <- spaces >> parseExpr
+  facQuant <- spaces >> parseMultExpr
   spaces
   if null (units facQuant) then
     return (pre, magnitude facQuant)
