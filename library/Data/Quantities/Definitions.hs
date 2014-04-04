@@ -1,6 +1,9 @@
 module Data.Quantities.Definitions where
 
+import Control.Applicative ((<$>))
 import Control.Monad.State
+import Data.Bits (xor)
+import Data.List (foldl')
 import qualified Data.Map as M
 import qualified Data.Set as S
 
@@ -12,7 +15,8 @@ import Data.Quantities.ExprParser (preprocessQuantity)
 -- | Convert string of definitions into 'Definitions' structure. See source
 -- code for 'Data.Quantities.defaultDefString' for an example.
 readDefinitions :: String -> Either QuantityError Definitions
-readDefinitions = makeDefinitions . parseDefinitions
+readDefinitions s = addDefinitionsHash s <$> d
+  where d = makeDefinitions (parseDefinitions s)
 
 type DefineMonad = StateT Definitions (Either QuantityError)
 makeDefinitions :: [Definition] -> Either QuantityError Definitions
@@ -64,3 +68,14 @@ addDefinition (UnitDefinition sym q syns) = do
 -- | Computes intersection of two lists
 checkDefined :: [Symbol] -> [Symbol] -> [Symbol]
 checkDefined a b = S.toList $ S.intersection (S.fromList a) (S.fromList b)
+
+
+-- | Variant of the DJB2 hash; <http://stackoverflow.com/a/9263004/1333514>
+hash :: String -> Int
+hash = foldl' (\h c -> 33*h `xor` fromEnum c) 5381
+
+-- | Add a hash of the definitions string to a group of Definitions. Meant to
+-- be the last step, after definitions are created. Used for Definitions
+-- comparison.
+addDefinitionsHash :: String -> Definitions -> Definitions
+addDefinitionsHash s d = d { defStringHash = hash s }

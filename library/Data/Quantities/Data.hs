@@ -87,6 +87,9 @@ data QuantityError = UndefinedUnitError String
                      -- already defined.
                    | ParserError String
                      -- ^ Used when a string cannot be parsed.
+                   | DifferentDefinitionsError Quantity Quantity
+                     -- ^ Used when two quantities come from different
+                     -- Definitions.
                    deriving (Show, Eq)
 
 
@@ -163,12 +166,33 @@ data Definition = PrefixDefinition { defPrefix   :: Symbol
 
 
 data Definitions = Definitions { bases          :: M.Map String (Double, CompositeUnit)
+                                 -- ^ Map from symbol to base units and
+                                 -- conversion factor to those units.
                                , synonyms       :: M.Map String String
+                                 -- ^ Map from alias to symbol. Symbols without
+                                 -- aliases are present as identity maps.
                                , unitsList      :: [String]
+                                 -- ^ List of all units (no aliases). Used in
+                                 -- prefix parser, and to detect duplicate
+                                 -- definitions.
                                , prefixes       :: [String]
+                                 -- ^ List of all prefixes (no aliases). Used
+                                 -- in prefix parser, and to detect duplicate
+                                 -- prefix definitions.
                                , prefixValues   :: M.Map String Double
+                                 -- ^ Multiplicative factor of prefixes.
                                , prefixSynonyms :: M.Map String String
-                               , unitTypes      :: M.Map String String } deriving (Show, Eq, Ord)
+                                 -- ^ Map from prefix alias to prefix.
+                               , unitTypes      :: M.Map String String
+                                 -- ^ Map from base symbols to unit types.
+                               , defStringHash  :: Int
+                                 -- ^ Hash of the definitions string used to
+                                 -- create definitions. Defaults to -1 if
+                                 -- modified or no string was used.
+                               } deriving (Show, Ord)
+
+instance Eq Definitions where
+  d1 == d2 = defStringHash d1 == defStringHash d2
 
 emptyDefinitions :: Definitions
 emptyDefinitions = Definitions { bases          = M.empty
@@ -177,7 +201,8 @@ emptyDefinitions = Definitions { bases          = M.empty
                                , prefixes       = []
                                , prefixValues   = M.fromList [("", 1)]
                                , prefixSynonyms = M.fromList [("", "")]
-                               , unitTypes      = M.empty }
+                               , unitTypes      = M.empty
+                               , defStringHash  = -1 }
 
 
 -- | Combine two Definitions structures
@@ -189,4 +214,5 @@ unionDefinitions d1 d2 = Definitions {
   , prefixes = prefixes d1 ++ prefixes d2
   , prefixValues = prefixValues d1 `M.union` prefixValues d2
   , prefixSynonyms = prefixSynonyms d1 `M.union` prefixSynonyms d2
-  , unitTypes = unitTypes d1 `M.union` unitTypes d2 }
+  , unitTypes = unitTypes d1 `M.union` unitTypes d2
+  , defStringHash = -1 }

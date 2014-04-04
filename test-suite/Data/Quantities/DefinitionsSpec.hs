@@ -35,3 +35,12 @@ spec = do
         bases allDict M.! "foot" `shouldBe` (3.21, [SimpleUnit "meter" "" 1])
         synonyms ftDict M.! "ft" `shouldBe` "foot"
         "foot" `elem` unitsList ftDict `shouldBe` True
+
+      describe "Eq Definitions" $ do
+        let d1 = readDefinitions "m = [length]"
+            d2 = readDefinitions "s = [time]"
+        it "correctly equates same definitions" $ do
+          d1 == d1 `shouldBe` True
+          d2 == d2 `shouldBe` True
+        it "correctly doesn't equate different definitions" $ do
+          d1 == d2 `shouldBe` False
