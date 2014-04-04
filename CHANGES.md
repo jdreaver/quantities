@@ -6,6 +6,7 @@ quantities changelog
 ----------------
 
 - Can handle arithmetical expressions in fromString
+- Added support for user-defined definitions
 
 
 0.1 (3-31-2014)
