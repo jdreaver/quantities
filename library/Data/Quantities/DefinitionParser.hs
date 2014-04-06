@@ -1,17 +1,10 @@
 module Data.Quantities.DefinitionParser where
 
-import Control.Applicative ((<$>), (<*))
-import System.Environment
+import Control.Applicative ((<*))
 import Text.ParserCombinators.Parsec
 
-import Data.Quantities.Data (Definition (..), Symbol, units, magnitude)
+import Data.Quantities.Data
 import Data.Quantities.ExprParser (parseMultExpr)
-
-
-main :: IO ()
-main = do
-  defs <- parseDefinitions <$> head <$> getArgs
-  print defs
 
 -- | Parse multiline string of definitions (say, from a file) into a
 -- list of definitions.
@@ -90,7 +83,7 @@ parsePrefix = do
   pre <- many1 letter <* char '-' <* spaces <* char '='
   facQuant <- spaces >> parseMultExpr
   spaces
-  if null (units facQuant) then
+  if null (units' facQuant) then
     return (pre, magnitude facQuant)
     else fail "No units allowed in prefix definitions"
 

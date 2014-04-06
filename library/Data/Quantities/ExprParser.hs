@@ -78,7 +78,7 @@ divideEQuants _ (Left b)          = Left b
 exptEQuants :: EQuant -> EQuant -> EQuant
 exptEQuants (Left a) _          = Left a
 exptEQuants _ (Left b)          = Left b
-exptEQuants (Right q) (Right (Quantity y [] _)) = Right $ exptQuants q y
+exptEQuants (Right q) (Right (Quantity y (CompoundUnit _ []))) = Right $ exptQuants q y
 exptEQuants a b  = Left $ ParserError $ "Used non-dimensionless exponent in " ++ showq
   where showq = unwords ["(", show a, ") ** (", show b, ")"]
 
@@ -93,14 +93,14 @@ parseESymbol d = do
 parseENum :: Definitions -> Parser EQuant
 parseENum d = do
   q <- parseNum
-  return $ Right $ q { defs = d }
+  return $ Right $ q { units = (units q) { defs = d } }
 
 -- | Convert prefixes and synonyms
 preprocessQuantity :: Definitions -> Quantity -> Either QuantityError Quantity
-preprocessQuantity d (Quantity x us _)
-  | null errs = Right $ Quantity x us' d
+preprocessQuantity d (Quantity x us)
+  | null errs = Right $ Quantity x (CompoundUnit d us')
   | otherwise = Left  $ head errs
-    where ppUnits     = map (preprocessUnit d) us
+    where ppUnits     = map (preprocessUnit d) (sUnits us)
           (errs, us') = partitionEithers ppUnits
 
 preprocessUnit :: Definitions -> SimpleUnit -> Either QuantityError SimpleUnit
@@ -154,7 +154,7 @@ exptMultOp = try (opChoice >> spaces' >> return exptMultQuants') <?> "expMultOp"
   where opChoice = string "^" <|> string "**"
 
 exptMultQuants' :: Quantity -> Quantity -> Quantity
-exptMultQuants' q (Quantity y [] _) = exptQuants q y
+exptMultQuants' q (Quantity y (CompoundUnit _ [])) = exptQuants q y
 exptMultQuants' a b  = error $ "Used non-dimensionless exponent in " ++ showq
   where showq = unwords ["(", show a, ") ** (", show b, ")"]
 

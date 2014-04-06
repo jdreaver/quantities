@@ -19,8 +19,7 @@ module Data.Quantities
        , Quantity
        , magnitude
        , units
-       , CompositeUnit
-       , SimpleUnit
+       , CompoundUnit
          -- * Conversion
          -- $conversion
        , convert

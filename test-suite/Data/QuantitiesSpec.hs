@@ -1,7 +1,7 @@
 module Data.QuantitiesSpec (spec) where
 
 import Data.Quantities
-import Data.Quantities.Data (SimpleUnit(..))
+import Data.Quantities.Data
 import Test.Hspec
 
 {-# ANN module "HLint: ignore Redundant do" #-}
@@ -12,9 +12,9 @@ spec = do
     it "parses simple unit" $ do
       let (Right m) = fromString "m"
       magnitude m `shouldBe` 1
-      units m `shouldBe` [SimpleUnit "meter" "" 1]
+      units' m `shouldBe` [SimpleUnit "meter" "" 1]
 
   describe "parseUnit" $ do
     it "parses simple unit" $ do
       let (Right m) = unitsFromString "m"
-      m `shouldBe` [SimpleUnit "meter" "" 1]
+      sUnits m `shouldBe` [SimpleUnit "meter" "" 1]

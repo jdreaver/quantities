@@ -1,7 +1,6 @@
 module Data.Quantities.Constructors where
 
-import Data.Quantities.Data (Definitions, CompositeUnit, Quantity(units),
-                             QuantityError(..))
+import Data.Quantities.Data
 import Data.Quantities.DefaultUnits (defaultDefString)
 import Data.Quantities.Definitions (readDefinitions)
 import Data.Quantities.ExprParser (parseExprQuant)
@@ -46,5 +45,5 @@ fromString' = parseExprQuant
 --
 -- >>> unitsFromString "N * s"
 -- Right [newton,second]
-unitsFromString :: String -> Either QuantityError CompositeUnit
+unitsFromString :: String -> Either QuantityError CompoundUnit
 unitsFromString = fmap units . fromString

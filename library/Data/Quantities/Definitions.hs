@@ -56,9 +56,9 @@ addDefinition (UnitDefinition sym q syns) = do
   if null defCheck
     then case pq of
       (Right pq') -> do
-        let (Quantity baseFac baseUnits _) = convertBase' d pq'
+        let (Quantity baseFac baseUnits) = convertBase' d pq'
         put $ d `unionDefinitions` emptyDefinitions {
-          bases         = M.singleton sym (baseFac, baseUnits)
+          bases         = M.singleton sym (baseFac, sUnits baseUnits)
           , synonyms    = M.fromList $ zip (sym : syns) (repeat sym)
           , unitsList   = sym : syns }
       (Left err) -> lift . Left $ err

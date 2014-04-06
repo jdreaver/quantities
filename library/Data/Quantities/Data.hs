@@ -22,13 +22,13 @@ instance Show SimpleUnit where
     where sym = pr ++ s
 
 
--- | Collection of SimpleUnits. Represents combination of simple
--- units.
-type CompositeUnit = [SimpleUnit]
+data CompoundUnit = CompoundUnit { defs   :: Definitions
+                                 , sUnits :: [SimpleUnit]
+                                 } deriving (Eq, Ord)
 
--- | Used to show composite units.
-showCompUnit :: CompositeUnit -> String
-showCompUnit = unwords . map showCompUnit' . showSort
+instance Show CompoundUnit where
+  show (CompoundUnit _ us) = unwords . map showCompUnit' $ showSort us
+
 
 -- | Show a single unit, but prepend with '/' if negative
 showCompUnit' :: SimpleUnit -> String
@@ -46,37 +46,44 @@ data Quantity = Quantity { magnitude :: Double
                            --
                            -- >>> magnitude <$> fromString "100 N * m"
                            -- Right 100.0
-                         , units     :: CompositeUnit
+                         , units     :: CompoundUnit
                            -- ^ Units associated with quantity.
                            --
                            -- >>> units <$> fromString "3.4 m/s^2"
                            -- Right [meter,second ** -2.0]
-                         , defs      :: Definitions } deriving (Ord)
+                         } deriving (Ord)
 
+
+-- | Convenience function to extract SimpleUnit collection from Quantity's
+-- CompoundUnit.
+units' :: Quantity -> [SimpleUnit]
+units' = sUnits . units
+
+-- | Convenience function to extract Definitions from Quantity's CompoundUnit.
+defs' :: Quantity -> Definitions
+defs' = defs . units
 
 instance Show Quantity where
-  show (Quantity m us _) = show m ++ " " ++ showCompUnit us
+  show (Quantity m us) = show m ++ " " ++ show us
+
+
+-- | Convenience function to make quantity with no definitions.
+baseQuant :: Double -> [SimpleUnit] -> Quantity
+baseQuant m us = Quantity m (CompoundUnit emptyDefinitions us)
 
 -- | Sort units but put negative units at end.
-showSort :: CompositeUnit -> CompositeUnit
+showSort :: [SimpleUnit] -> [SimpleUnit]
 showSort c = pos ++ neg
   where (pos, neg) = partition (\q -> power q > 0) c
 
 instance Eq Quantity where
-  (Quantity m1 u1 _) == (Quantity m2 u2 _) = m1 == m2 && sort u1 == sort u2
+  (Quantity m1 u1) == (Quantity m2 u2) = m1 == m2 && sort (sUnits u1) == sort (sUnits u2)
 
-
--- | Quantity without definitions.
-baseQuant :: Double -> CompositeUnit -> Quantity
-baseQuant m u = Quantity m u emptyDefinitions
-
-fromDefinitions :: Definitions -> Double -> CompositeUnit -> Quantity
-fromDefinitions d m u = Quantity m u d
 
 -- | Custom error type
 data QuantityError = UndefinedUnitError String
                      -- ^ Used when trying to parse an undefined unit.
-                   | DimensionalityError CompositeUnit CompositeUnit
+                   | DimensionalityError CompoundUnit CompoundUnit
                      -- ^ Used when converting units that do not have the same
                      -- dimensionality (example: convert meter to second).
                    | UnitAlreadyDefinedError String
@@ -114,9 +121,10 @@ type QuantityComputation = Either QuantityError
 
 -- | Combines equivalent units and removes units with powers of zero.
 reduceUnits :: Quantity -> Quantity
-reduceUnits q = q { units = reduceUnits' (units q) }
+reduceUnits q = q { units = newUnits }
+  where newUnits = (units q) { sUnits = reduceUnits' (units' q) }
 
-reduceUnits', removeZeros :: CompositeUnit -> CompositeUnit
+reduceUnits', removeZeros :: [SimpleUnit] -> [SimpleUnit]
 reduceUnits'  = removeZeros . reduceComp . sort
   where reduceComp [] = []
         reduceComp (SimpleUnit x pr1 p1 : SimpleUnit y pr2 p2: xs)
@@ -129,7 +137,7 @@ removeZeros [] = []
 removeZeros (SimpleUnit _ _ 0.0 : xs) = removeZeros xs
 removeZeros (x:xs) = x : removeZeros xs
 
-invertUnits :: CompositeUnit -> CompositeUnit
+invertUnits :: [SimpleUnit] -> [SimpleUnit]
 invertUnits = map invertSimpleUnit
 
 -- | Inverts unit by negating the power field.
@@ -138,20 +146,21 @@ invertSimpleUnit (SimpleUnit s pr p) = SimpleUnit s pr (-p)
 
 -- | Multiplies two quantities.
 multiplyQuants :: Quantity -> Quantity -> Quantity
-multiplyQuants x y = reduceUnits $ Quantity mag newUnits (defs x)
+multiplyQuants x y = reduceUnits $ Quantity mag newUnits
   where mag      = magnitude x * magnitude y
-        newUnits = units x ++ units y
+        newUnits = (units x) { sUnits = units' x ++ units' y }
 
 -- | Divides two quantities.
 divideQuants :: Quantity -> Quantity -> Quantity
-divideQuants x y = reduceUnits $ Quantity mag newUnits (defs x)
+divideQuants x y = reduceUnits $ Quantity mag newUnits
   where mag      = magnitude x / magnitude y
-        newUnits = units x ++ invertUnits (units y)
+        newUnits = (units x) { sUnits = units' x ++ invertUnits (units' y) }
 
 -- | Exponentiates a quantity with a double.
 exptQuants :: Quantity -> Double -> Quantity
-exptQuants (Quantity x u d) y = reduceUnits $ Quantity (x**y) (expUnits u) d
+exptQuants (Quantity x u) y = reduceUnits $ Quantity (x**y) newUnits
   where expUnits = map (\(SimpleUnit s pr p) -> SimpleUnit s pr (p*y))
+        newUnits = u { sUnits = expUnits (sUnits u) }
 
 
 data Definition = PrefixDefinition { defPrefix   :: Symbol
@@ -165,7 +174,7 @@ data Definition = PrefixDefinition { defPrefix   :: Symbol
                                    , defSynonyms :: [Symbol]} deriving (Show, Eq, Ord)
 
 
-data Definitions = Definitions { bases          :: M.Map String (Double, CompositeUnit)
+data Definitions = Definitions { bases          :: M.Map String (Double, [SimpleUnit])
                                  -- ^ Map from symbol to base units and
                                  -- conversion factor to those units.
                                , synonyms       :: M.Map String String

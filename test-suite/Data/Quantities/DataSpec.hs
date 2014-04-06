@@ -27,12 +27,12 @@ spec = do
     describe "Quantity creation" $ do
       it "compiles" $ do
         magnitude testQuant `shouldBe` 5.0
-        units testQuant `shouldBe` [mm2]
+        units' testQuant `shouldBe` [mm2]
 
     describe "Reduce units" $ do
       it "should work" $ do
         let rmm2 = baseQuant 1 (replicate 2 mm2)
-        units (reduceUnits rmm2) `shouldBe` [mm2 {power=4}]
+        units' (reduceUnits rmm2) `shouldBe` [mm2 {power=4}]
 
     describe "invertSimpleUnit" $ do
       it "should put unit in denominator" $ do

@@ -7,7 +7,7 @@ import Test.Hspec
 
 {-# ANN module "HLint: ignore Redundant do" #-}
 
-makeRightQuant :: Double -> CompositeUnit -> Either QuantityError Quantity
+makeRightQuant :: Double -> [SimpleUnit] -> Either QuantityError Quantity
 makeRightQuant m u = Right (baseQuant m u)
 
 spec :: Spec
