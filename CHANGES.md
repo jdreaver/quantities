@@ -2,11 +2,12 @@ quantities changelog
 ====================
 
 
-0.2 (unreleased)
+0.2 (4-6-2014)
 ----------------
 
 - Can handle arithmetical expressions in fromString
 - Added support for user-defined definitions
+- Added check that definitions are the same for conversions
 
 
 0.1 (3-31-2014)
