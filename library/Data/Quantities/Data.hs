@@ -94,7 +94,7 @@ data QuantityError = UndefinedUnitError String
                      -- already defined.
                    | ParserError String
                      -- ^ Used when a string cannot be parsed.
-                   | DifferentDefinitionsError Quantity Quantity
+                   | DifferentDefinitionsError CompoundUnit CompoundUnit
                      -- ^ Used when two quantities come from different
                      -- Definitions.
                    deriving (Show, Eq)

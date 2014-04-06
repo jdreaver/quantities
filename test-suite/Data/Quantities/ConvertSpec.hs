@@ -14,7 +14,10 @@ defaultUnits :: [SimpleUnit] -> CompoundUnit
 defaultUnits = CompoundUnit testDefs
 
 testDefs :: Definitions
-(Right testDefs) = readDefinitions $ unlines [
+(Right testDefs) = readDefinitions testDefsString
+
+testDefsString :: String
+testDefsString = unlines [
   "milli- = 1e-3  = m-"
   ,"centi- = 1e-2  = c-"
   -- ,"kilo- =  1e3   = k-"
@@ -50,6 +53,14 @@ spec = do
             du2 = defaultUnits $ dimensionality' testDefs (sUnits u2)
             (Left err) = convert q1 u2
         err `shouldBe` DimensionalityError dq1 du2
+
+      it "fails when definitions different" $ do
+        let q = defaultQuant 1 [SimpleUnit "second" "" 1]
+            (Right d) = readDefinitions $ testDefsString ++ "\nfun = [fun]"
+            us  = units $ defaultQuant 1 [SimpleUnit "minute" "" 1]
+            usd = us { defs = d }
+            (Left expect) = convert q usd
+        expect `shouldBe` DifferentDefinitionsError (units q) usd
 
     describe "addQuants" $ do
       it "" $ do

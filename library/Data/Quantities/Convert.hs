@@ -13,7 +13,11 @@ unityQuant d = Quantity 1 (CompoundUnit d [])
 -- >>> convert <$> fromString "m" <*> unitsFromString "ft"
 -- Right (Right 3.280839895013123 foot)
 convert :: Quantity -> CompoundUnit -> Either QuantityError Quantity
-convert x us = convert' (defs us) x us
+convert q us
+  | hq /= hus = Left  $ DifferentDefinitionsError (units q) us
+  | otherwise = convert' (defs us) q us
+  where hq  = defStringHash (defs' q)
+        hus = defStringHash (defs us)
 
 
 -- | Convert a quantity to its base units.
@@ -33,6 +37,7 @@ convert' d q us'
         mb'   = magnitude $ toBase d (sUnits us')
         dimq  = dimensionality' d (units' q)
         dimus = dimensionality' d (sUnits us')
+
 
 
 -- | Convert a quantity to its base units.
