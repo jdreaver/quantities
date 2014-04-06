@@ -114,4 +114,11 @@ import Data.Quantities.DefaultUnits (defaultDefString)
 --
 -- NOTE: It is very important not to perform conversions on two quantities from
 -- different Definitions. Most of the error checking for undefined units is
--- done when a unit is created, and not when performing conversions.
+-- done when a unit is created, and not when performing conversions. We try to
+-- catch when different definitions are used.
+--
+-- > (Right m)  = fromString "m"
+-- > (Right ft) = myFromString "ft"
+--
+-- >>> convert m (units ft)
+-- Left (DifferentDefinitionsError meter foot)
