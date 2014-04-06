@@ -3,7 +3,7 @@ quantities changelog
 
 
 0.2 (4-6-2014)
-----------------
+--------------
 
 - Can handle arithmetical expressions in fromString
 - Added support for user-defined definitions
@@ -11,7 +11,7 @@ quantities changelog
 
 
 0.1 (3-31-2014)
-----------------
+---------------
 
 - Full implementation of multiplicative dimensional quantities (no offsets yet
   for temperatures).
