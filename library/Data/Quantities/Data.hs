@@ -29,7 +29,6 @@ data CompoundUnit = CompoundUnit { defs   :: Definitions
 instance Show CompoundUnit where
   show (CompoundUnit _ us) = unwords . map showCompUnit' $ showSort us
 
-
 -- | Show a single unit, but prepend with '/' if negative
 showCompUnit' :: SimpleUnit -> String
 showCompUnit' (SimpleUnit s pr p)
@@ -38,6 +37,11 @@ showCompUnit' (SimpleUnit s pr p)
   | p < 0     = "/ " ++ sym ++ " ** " ++ show (-p)
   | otherwise = sym ++ " ** " ++ show p
   where sym = pr ++ s
+
+
+showPrettyNum :: (Show a, Num a) => a -> String
+showPrettyNum x = map (pretty M.!) $ show x
+  where pretty = M.fromList $ zip "0123456789.-" "⁰¹²³⁴⁵⁶⁷⁸⁹·⁻"
 
 
 -- | Combination of magnitude and units.
