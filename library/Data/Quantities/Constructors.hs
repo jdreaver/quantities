@@ -8,6 +8,9 @@ import Data.Quantities.ExprParser (parseExprQuant)
 defaultDefinitions :: Either QuantityError Definitions
 defaultDefinitions = readDefinitions defaultDefString
 
+-- $setup
+-- >>> import Data.Quantities
+
 d :: Definitions
 (Right d) = defaultDefinitions
 
@@ -32,11 +35,11 @@ fromString = parseExprQuant d
 
 -- | Create quantities with custom definitions.
 --
--- > (Right d) = readDefinitions myDefString
--- > myFromString = fromString' d
---
--- >>> myFromString "25 m/s"
--- Right 25.0 meter / second
+-- >>> let myDefString = defaultDefString ++ "\nmy_unit = 100 s"
+-- >>> let (Right d) = readDefinitions myDefString
+-- >>> let myFromString = fromString' d
+-- >>> myFromString "25 my_unit"
+-- Right 25.0 my_unit
 fromString' :: Definitions -> String -> Either QuantityError Quantity
 fromString' = parseExprQuant
 
@@ -44,6 +47,6 @@ fromString' = parseExprQuant
 -- | Parse units from a string. Equivalent to @fmap units . fromString@
 --
 -- >>> unitsFromString "N * s"
--- Right [newton,second]
+-- Right newton second
 unitsFromString :: String -> Either QuantityError CompoundUnit
 unitsFromString = fmap units . fromString

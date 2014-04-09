@@ -5,6 +5,10 @@ import qualified Data.Map as M
 
 import Data.Quantities.Data
 
+-- $setup
+-- >>> import Control.Applicative
+-- >>> import Data.Quantities
+
 unityQuant :: Definitions -> Quantity
 unityQuant d = Quantity 1 (CompoundUnit d [])
 
@@ -62,7 +66,7 @@ simpleToBase d (SimpleUnit sym pre pow) = Quantity m (CompoundUnit d us)
 -- | Computes dimensionality of quantity.
 --
 -- >>> dimensionality <$> fromString "newton"
--- Right [length,mass,time ** -2.0]
+-- Right [length] [mass] / [time] ** 2.0
 dimensionality :: Quantity -> CompoundUnit
 dimensionality q = CompoundUnit (defs' q) dimUnits
   where dimUnits = dimensionality' (defs' q) (units' q)

@@ -4,6 +4,10 @@ module Data.Quantities.Data where
 import Data.List (partition, sort)
 import qualified Data.Map as M
 
+-- $setup
+-- >>> import Control.Applicative
+-- >>> import Data.Quantities
+
 -- | String representation of a unit. Examples: "meter", "foot"
 type Symbol = String
 
@@ -54,7 +58,7 @@ data Quantity = Quantity { magnitude :: Double
                            -- ^ Units associated with quantity.
                            --
                            -- >>> units <$> fromString "3.4 m/s^2"
-                           -- Right [meter,second ** -2.0]
+                           -- Right meter / second ** 2.0
                          } deriving (Ord)
 
 

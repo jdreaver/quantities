@@ -50,6 +50,11 @@ import Data.Quantities.Data
 import Data.Quantities.Definitions (readDefinitions)
 import Data.Quantities.DefaultUnits (defaultDefString)
 
+
+-- $setup
+-- >>> import Control.Applicative
+
+
 -- $constructors
 --
 -- Currently, one constructor is supported to create quantities: 'fromString'.
@@ -98,10 +103,9 @@ import Data.Quantities.DefaultUnits (defaultDefString)
 -- 'defaultDefString'. Here is an example of adding a new unit called
 -- @metric_foot@.
 --
--- > myDefString = defaultDefString ++ "\n" ++ "metric_foot = 300mm"
--- > (Right d') = readDefinitions myDefString
--- > myFromString = fromString' d'
---
+-- >>> let myDefString = defaultDefString ++ "\n" ++ "metric_foot = 300mm"
+-- >>> let (Right d') = readDefinitions myDefString
+-- >>> let myFromString = fromString' d'
 -- >>> myFromString "metric_foot"
 -- Right 1.0 metric_foot
 -- >>> convertBase <$> myFromString "metric_foot"
@@ -117,8 +121,7 @@ import Data.Quantities.DefaultUnits (defaultDefString)
 -- done when a unit is created, and not when performing conversions. We try to
 -- catch when different definitions are used.
 --
--- > (Right m)  = fromString "m"
--- > (Right ft) = myFromString "ft"
---
+-- >>> let (Right m)  = fromString "m"
+-- >>> let (Right ft) = myFromString "ft"
 -- >>> convert m (units ft)
 -- Left (DifferentDefinitionsError meter foot)
