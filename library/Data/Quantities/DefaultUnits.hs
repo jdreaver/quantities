@@ -1,3 +1,4 @@
+-- | Holds the default definition string.
 module Data.Quantities.DefaultUnits (defaultDefString) where
 
 -- | View the source code for this declaration to see what units and prefixes

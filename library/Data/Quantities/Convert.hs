@@ -1,3 +1,5 @@
+-- | Module to perform unit conversions, compute dimensionality, and convert to
+-- base units.
 module Data.Quantities.Convert where
 
 import Data.List (sort)
@@ -8,9 +10,6 @@ import Data.Quantities.Data
 -- $setup
 -- >>> import Control.Applicative
 -- >>> import Data.Quantities
-
-unityQuant :: Definitions -> Quantity
-unityQuant d = Quantity 1 (CompoundUnit d [])
 
 -- | Convert quantity to given units.
 --
@@ -52,7 +51,8 @@ convertBase' d (Quantity m us) = Quantity (m*mb) ub
 
 -- | Converts a composite unit to its base quantity
 toBase :: Definitions -> [SimpleUnit] -> Quantity
-toBase d = foldr (multiplyQuants . simpleToBase d) (unityQuant d)
+toBase d = foldr (multiplyQuants . simpleToBase d) unityQuant
+  where unityQuant = Quantity 1 (CompoundUnit d [])
 
 
 -- | Converts a simple unit to its base quantity.
@@ -71,6 +71,9 @@ dimensionality :: Quantity -> CompoundUnit
 dimensionality q = CompoundUnit (defs' q) dimUnits
   where dimUnits = dimensionality' (defs' q) (units' q)
 
+-- | Computes dimensionality of a list of SimpleUnits. Stores the
+-- dimensionality as a list of SimpleUnits as well, so we don't need a whole
+-- new type.
 dimensionality' :: Definitions -> [SimpleUnit] -> [SimpleUnit]
 dimensionality' d us = sort $ map dim ub
   where ub = units' $ toBase d us
@@ -88,7 +91,7 @@ addQuants = linearQuants (+)
 subtractQuants :: Quantity -> Quantity -> Either QuantityError Quantity
 subtractQuants = linearQuants (-)
 
-
+-- | Helper function used in addQuants and subtractQuants.
 linearQuants :: (Double -> Double -> Double) -> Quantity -> Quantity
                 -> Either QuantityError Quantity
 linearQuants f (Quantity m1 u1) q2 = case q of

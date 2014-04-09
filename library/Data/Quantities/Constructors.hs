@@ -1,3 +1,4 @@
+-- | Defines the common constructors used to build quantities.
 module Data.Quantities.Constructors where
 
 import Data.Quantities.Data
@@ -5,14 +6,12 @@ import Data.Quantities.DefaultUnits (defaultDefString)
 import Data.Quantities.Definitions (readDefinitions)
 import Data.Quantities.ExprParser (parseExprQuant)
 
+-- | Default set of definitions that come predefined.
 defaultDefinitions :: Either QuantityError Definitions
 defaultDefinitions = readDefinitions defaultDefString
 
 -- $setup
 -- >>> import Data.Quantities
-
-d :: Definitions
-(Right d) = defaultDefinitions
 
 -- | Create a Quantity by parsing a string. Uses an 'UndefinedUnitError' for
 -- undefined units. Handles arithmetic expressions as well.
@@ -31,7 +30,10 @@ d :: Definitions
 -- >>> fromString "m ** (2s)"
 -- Left (ParserError "Used non-dimensionless exponent in ( Right 1.0 meter ) ** ( Right 2.0 second )")
 fromString :: String -> Either QuantityError Quantity
-fromString = parseExprQuant d
+fromString s = case defaultDefinitions of
+                    (Right d) -> parseExprQuant d s
+                    (Left d)  -> Left d
+
 
 -- | Create quantities with custom definitions.
 --

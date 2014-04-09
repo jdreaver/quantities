@@ -1,3 +1,4 @@
+-- | This module builds a Definitions object from a string.
 module Data.Quantities.Definitions where
 
 import Control.Applicative ((<$>))
@@ -18,10 +19,18 @@ readDefinitions :: String -> Either QuantityError Definitions
 readDefinitions s = addDefinitionsHash s <$> d
   where d = makeDefinitions (parseDefinitions s)
 
+-- | Monad used for addDefinition.
 type DefineMonad = StateT Definitions (Either QuantityError)
+
+-- | Converts a list of definitions to the Definitions data structure. Modifies
+-- an emptyDefinitions object by combining the incremental additions of each
+-- Definition.
 makeDefinitions :: [Definition] -> Either QuantityError Definitions
 makeDefinitions ds = execStateT (mapM addDefinition ds) emptyDefinitions
 
+-- | Add one definition to the definitions. Creates a new Definitions object
+-- using the information in the Definition, and then unions the Definitions in
+-- the state monad with this new object.
 addDefinition :: Definition -> DefineMonad ()
 
 addDefinition (PrefixDefinition sym fac syns) = do

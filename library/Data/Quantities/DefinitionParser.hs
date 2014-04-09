@@ -1,3 +1,4 @@
+-- | Uses parsec to parse definition lines.
 module Data.Quantities.DefinitionParser where
 
 import Control.Applicative ((<*))
@@ -13,6 +14,7 @@ parseDefinitions input = case parse parseDefinitions' "Input File Parser" input 
   Left err -> error (show err) >> []
   Right val -> val
 
+-- | Parsec parser for definitions.
 parseDefinitions' :: Parser [Definition]
 parseDefinitions' = many parseDef <* eof
 
@@ -31,6 +33,7 @@ parseDef  = do
 -- comment :: Parser String
 -- comment = char '#' >> many (noneOf "\n")
 
+-- | Custom eol parsec parser.
 eol :: Parser Char
 eol = char '\n'
 
@@ -42,6 +45,7 @@ parseDefLine = do
   syns <- many (try parseSynonym)
   return $ UnitDefinition s e syns
 
+-- | Parses a unit definition. Example: foot = 12 in = ft = feet
 parseUnitDef :: Parser Definition
 parseUnitDef = do
   sym   <- parseSymbol <* spaces <* char '='
@@ -50,11 +54,12 @@ parseUnitDef = do
   -- skipMany comment
   return $ UnitDefinition sym quant []
 
+-- | Parses the synonyms at the end of a base or unit definition.
 parseSynonym :: Parser Symbol
 parseSynonym = spaces >> char '=' >> spaces >> parseSymbol <* spaces
 
 
--- | Parse line containing base definition
+-- | Parse line containing base definition.
 -- Ex: meter = [length] = m
 parseBaseLine :: Parser Definition
 parseBaseLine = do
@@ -62,6 +67,7 @@ parseBaseLine = do
   syns <- many (try parseSynonym)
   return $ BaseDefinition sym f syns
 
+-- | Parse the base of a base definition. Example: [length] -> length
 parseBase :: Parser (Symbol, Symbol)
 parseBase = do
   sym <- parseSymbol <* spaces <* char '='
@@ -78,6 +84,7 @@ parsePrefixLine = do
   syns <- many (try parsePrefixSynonym)
   return $ PrefixDefinition p f syns
 
+-- | Parse the prefix part of a prefix definition. Example: yocto- -> yocto
 parsePrefix :: Parser (Symbol, Double)
 parsePrefix = do
   pre <- many1 letter <* char '-' <* spaces <* char '='
@@ -87,7 +94,7 @@ parsePrefix = do
     return (pre, magnitude facQuant)
     else fail "No units allowed in prefix definitions"
 
-
+-- | Parse the synonyms for a prefix definition.
 parsePrefixSynonym :: Parser Symbol
 parsePrefixSynonym = spaces >> char '=' >> spaces >> parseSymbol <* char '-' <* spaces
 

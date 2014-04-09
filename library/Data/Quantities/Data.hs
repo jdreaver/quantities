@@ -25,9 +25,13 @@ instance Show SimpleUnit where
     | otherwise = sym ++ " ** " ++ show p
     where sym = pr ++ s
 
-
+-- | Data type to hold compound units, which are simple units multiplied
+-- together.
 data CompoundUnit = CompoundUnit { defs   :: Definitions
+                                   -- ^ Definitions used to create the units.
                                  , sUnits :: [SimpleUnit]
+                                   -- ^ List of SimpleUnits that is interpreted
+                                   -- as the units being multiplied together.
                                  } deriving (Eq, Ord)
 
 instance Show CompoundUnit where
@@ -42,7 +46,7 @@ showCompUnit' (SimpleUnit s pr p)
   | otherwise = sym ++ " ** " ++ show p
   where sym = pr ++ s
 
-
+-- | Will be used when we allow pretty printing of fractional units.
 showPrettyNum :: (Show a, Num a) => a -> String
 showPrettyNum x = map (pretty M.!) $ show x
   where pretty = M.fromList $ zip "0123456789.-" "⁰¹²³⁴⁵⁶⁷⁸⁹·⁻"
@@ -124,7 +128,6 @@ data QuantityError = UndefinedUnitError String
 -- >   convertBase x
 --
 -- Returns @Left (UndefinedUnitError "BADUNIT")@
-
 type QuantityComputation = Either QuantityError
 
 -- | Combines equivalent units and removes units with powers of zero.
@@ -132,19 +135,23 @@ reduceUnits :: Quantity -> Quantity
 reduceUnits q = q { units = newUnits }
   where newUnits = (units q) { sUnits = reduceUnits' (units' q) }
 
-reduceUnits', removeZeros :: [SimpleUnit] -> [SimpleUnit]
-reduceUnits'  = removeZeros . reduceComp . sort
+-- | Helper function for reduceUnits.
+reduceUnits' :: [SimpleUnit] -> [SimpleUnit]
+reduceUnits' = removeZeros . reduceComp . sort
   where reduceComp [] = []
         reduceComp (SimpleUnit x pr1 p1 : SimpleUnit y pr2 p2: xs)
           | (x,pr1) == (y,pr2) = SimpleUnit x pr1 (p1+p2) : reduceComp xs
           | otherwise = SimpleUnit x pr1 p1 : reduceComp (SimpleUnit y pr2 p2 : xs)
         reduceComp (x:xs) = x : reduceComp xs
 
-
+-- | Removes units with powers of zero that are left over from other
+-- computations.
+removeZeros :: [SimpleUnit] -> [SimpleUnit]
 removeZeros [] = []
 removeZeros (SimpleUnit _ _ 0.0 : xs) = removeZeros xs
 removeZeros (x:xs) = x : removeZeros xs
 
+-- | Negate the powers of a list of SimpleUnits.
 invertUnits :: [SimpleUnit] -> [SimpleUnit]
 invertUnits = map invertSimpleUnit
 
@@ -170,7 +177,8 @@ exptQuants (Quantity x u) y = reduceUnits $ Quantity (x**y) newUnits
   where expUnits = map (\(SimpleUnit s pr p) -> SimpleUnit s pr (p*y))
         newUnits = u { sUnits = expUnits (sUnits u) }
 
-
+-- | Data type for the three definition types. Used to hold definitions
+-- information when parsing.
 data Definition = PrefixDefinition { defPrefix   :: Symbol
                                    , factor      :: Double
                                    , defSynonyms :: [Symbol]}
@@ -181,7 +189,8 @@ data Definition = PrefixDefinition { defPrefix   :: Symbol
                                    , quantity    :: Quantity
                                    , defSynonyms :: [Symbol]} deriving (Show, Eq, Ord)
 
-
+-- | Holds information about defined units, prefixes, and bases. Used when
+-- parsing new units and performing units conversions.
 data Definitions = Definitions { bases          :: M.Map String (Double, [SimpleUnit])
                                  -- ^ Map from symbol to base units and
                                  -- conversion factor to those units.
@@ -211,6 +220,7 @@ data Definitions = Definitions { bases          :: M.Map String (Double, [Simple
 instance Eq Definitions where
   d1 == d2 = defStringHash d1 == defStringHash d2
 
+-- | Default, empty set of definitions.
 emptyDefinitions :: Definitions
 emptyDefinitions = Definitions { bases          = M.empty
                                , synonyms       = M.empty

@@ -13,17 +13,20 @@ import Text.ParserCombinators.Parsec
 import Data.Quantities.Convert (addQuants, subtractQuants)
 import Data.Quantities.Data
 
+-- | Alternate definition for spaces. Just actual spaces.
 spaces' :: Parser String
 spaces' = many $ char ' '
 
+-- | Parse quantity expression; addition and subtraction allowed.
 parseExprQuant :: Definitions -> String -> Either QuantityError Quantity
 parseExprQuant d input = case parse (parseExpr d) "arithmetic" input of
   Left err  -> Left $ ParserError $ show err
   Right val -> val
 
--- | Converts string to a Quantity using an expression grammar parser.
+-- | Simple type used for shorthand
 type EQuant = Either QuantityError Quantity
 
+-- | Using already compiled definitions, parse expression.
 parseExpr :: Definitions -> Parser EQuant
 parseExpr d = spaces' >> parseExpr' d <* spaces'
 
@@ -54,27 +57,32 @@ mulOp = try parseTimes <|> try parseDiv <|> parseImplicitTimes <?> "mulOp"
 exptOp = try (opChoice >> spaces' >> return exptEQuants) <?> "expOp"
   where opChoice = string "^" <|> string "**"
 
-
+-- | Modification of addQuants to account for Either QuantityError Quantity.
 addEQuants :: EQuant -> EQuant -> EQuant
 addEQuants (Right a) (Right b) = addQuants a b
 addEQuants (Left a) _          = Left a
 addEQuants _ (Left b)          = Left b
 
+-- | Modification of subtractQuants to account for Either QuantityError Quantity.
 subtractEQuants :: EQuant -> EQuant -> EQuant
 subtractEQuants (Right a) (Right b) = subtractQuants a b
 subtractEQuants (Left a) _          = Left a
 subtractEQuants _ (Left b)          = Left b
 
+-- | Modification of multiplyQuants to account for Either QuantityError Quantity.
 multiplyEQuants :: EQuant -> EQuant -> EQuant
 multiplyEQuants (Right a) (Right b) = Right $ multiplyQuants a b
 multiplyEQuants (Left a) _          = Left a
 multiplyEQuants _ (Left b)          = Left b
 
+-- | Modification of divideQuants to account for Either QuantityError Quantity.
 divideEQuants :: EQuant -> EQuant -> EQuant
 divideEQuants (Right a) (Right b) = Right $ divideQuants a b
 divideEQuants (Left a) _          = Left a
 divideEQuants _ (Left b)          = Left b
 
+-- | Modification of exptQuants to account for Either QuantityError Quantity.
+-- Returns error if dimensional quantity used in exponent.
 exptEQuants :: EQuant -> EQuant -> EQuant
 exptEQuants (Left a) _          = Left a
 exptEQuants _ (Left b)          = Left b
@@ -82,20 +90,23 @@ exptEQuants (Right q) (Right (Quantity y (CompoundUnit _ []))) = Right $ exptQua
 exptEQuants a b  = Left $ ParserError $ "Used non-dimensionless exponent in " ++ showq
   where showq = unwords ["(", show a, ") ** (", show b, ")"]
 
+-- | Modification of parseSymbolNum to handle parsing errors.
 parseESymbolNum :: Definitions -> Parser EQuant
 parseESymbolNum d = try (parseENum d) <|> parseESymbol d
 
+-- | Parses a symbol and then parses a prefix form that symbol.
 parseESymbol :: Definitions -> Parser EQuant
 parseESymbol d = do
   q <- parseSymbol'
   return $ preprocessQuantity d q
 
+-- | Parse a number and insert the given definitions into the CompoundUnit.
 parseENum :: Definitions -> Parser EQuant
 parseENum d = do
   q <- parseNum
   return $ Right $ q { units = (units q) { defs = d } }
 
--- | Convert prefixes and synonyms
+-- | Parses out prefixes and aliases from quantity's units.
 preprocessQuantity :: Definitions -> Quantity -> Either QuantityError Quantity
 preprocessQuantity d (Quantity x us)
   | null errs = Right $ Quantity x (CompoundUnit d us')
@@ -103,6 +114,7 @@ preprocessQuantity d (Quantity x us)
     where ppUnits     = map (preprocessUnit d) (sUnits us)
           (errs, us') = partitionEithers ppUnits
 
+-- | Parses prefix and alias, if applicable, from a SimpleUnit.
 preprocessUnit :: Definitions -> SimpleUnit -> Either QuantityError SimpleUnit
 preprocessUnit d (SimpleUnit s _ p)
   | rs `elem` unitsList d = Right $ SimpleUnit ns np p
@@ -111,7 +123,7 @@ preprocessUnit d (SimpleUnit s _ p)
         np       = prefixSynonyms d M.! rp
         ns       = synonyms d M.! rs
 
-
+-- | Try to parse a prefix from a symbol. Otherwise, just return the symbol.
 prefixParser :: Definitions -> String -> (String, String)
 prefixParser d input = if input `elem` unitsList d
                           then ("", input)
@@ -119,7 +131,7 @@ prefixParser d input = if input `elem` unitsList d
                             Left _ -> ("", input)
                             Right val -> splitAt (length val) input
 
-
+-- | Helper function for prefixParser that is a Parsec parser.
 prefixParser' :: Definitions -> Parser String
 prefixParser' d = do
   pr <- choice $ map (try . string) (prefixes d)
@@ -158,9 +170,12 @@ exptMultQuants' q (Quantity y (CompoundUnit _ [])) = exptQuants q y
 exptMultQuants' a b  = error $ "Used non-dimensionless exponent in " ++ showq
   where showq = unwords ["(", show a, ") ** (", show b, ")"]
 
+-- | Parse either a symbol or a number.
 parseSymbolNum :: Parser Quantity
 parseSymbolNum = try parseNum <|> parseSymbol'
 
+-- | Parse a symbol with an optional negative sign. A symbol can contain
+-- alphanumeric characters and the character '_'.
 parseSymbol' :: Parser Quantity
 parseSymbol' = do
   neg  <- option "" $ string "-"
@@ -169,11 +184,14 @@ parseSymbol' = do
   _ <- spaces'
   return $ baseQuant (timesSign neg 1) [SimpleUnit (symf : rest) "" 1]
 
+-- | Parent function for parseNum' to parse a number.
 parseNum :: Parser Quantity
 parseNum = do
   num <- parseNum'
   return $ baseQuant num []
 
+-- | Meat of number parser. Parse digits with an optional negative sign and
+-- optional exponential. For example, -5.2e4.
 parseNum' :: Parser Double
 parseNum' = do
   neg <- option "" $ string "-"
@@ -183,6 +201,8 @@ parseNum' = do
   _ <- spaces'
   return $ timesSign neg $ fst $ head $ readFloat $ whole ++ decimal ++ exponential
 
+-- | Parses just the exponential part of a number. For example, parses "4" from
+-- "-5.2e4".
 parseExponential :: Parser String
 parseExponential = do
   e <- string "e"
@@ -190,6 +210,7 @@ parseExponential = do
   pow <- many1 digit
   return $ e ++ neg ++ pow
 
+-- | Negate a number if the first argument is a negative sign.
 timesSign :: String -> Double -> Double
 timesSign sign x
   | sign == "-" = -x

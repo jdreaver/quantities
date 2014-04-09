@@ -2,7 +2,7 @@ module Data.Quantities.ExprParserSpec (spec) where
 
 import Data.Either
 
-import Data.Quantities.Constructors (d)
+import Data.Quantities.Constructors
 import Data.Quantities.Data
 import Data.Quantities.Definitions
 import Data.Quantities.ExprParser
@@ -10,6 +10,9 @@ import Data.Quantities.ExprParser
 import Test.Hspec
 
 {-# ANN module "HLint: ignore Redundant do" #-}
+
+d :: Definitions
+(Right d) = defaultDefinitions
 
 isLeft :: Either a b -> Bool
 isLeft = null . rights . return
