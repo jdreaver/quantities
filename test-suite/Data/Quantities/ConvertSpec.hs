@@ -78,12 +78,12 @@ spec = do
         abs (magnitude q - (-2.280839)) < 1e-5  `shouldBe` True
         units q `shouldBe` defaultUnits [SimpleUnit "foot" "" 1]
 
-    describe "dimesionality" $ do
+    describe "dimensionality" $ do
       it "computes dimensionality of simple units" $ do
         let ft = defaultQuant 1 [SimpleUnit "foot" "" 1]
-        dimensionality ft `shouldBe` defaultUnits  [SimpleUnit "length" "" 1]
+        dimensionality ft `shouldBe` defaultUnits  [SimpleUnit "[length]" "" 1]
 
       it "computes dimensionality of complex units" $ do
         let sft = defaultQuant 1 [SimpleUnit "second" "" 1, SimpleUnit "foot" "" 1]
-            expect = defaultUnits [SimpleUnit "length" "" 1, SimpleUnit "time" "" 1]
+            expect = defaultUnits [SimpleUnit "[length]" "" 1, SimpleUnit "[time]" "" 1]
         dimensionality sft `shouldBe` expect

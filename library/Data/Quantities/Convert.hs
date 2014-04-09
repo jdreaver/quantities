@@ -70,7 +70,7 @@ dimensionality q = CompoundUnit (defs' q) dimUnits
 dimensionality' :: Definitions -> [SimpleUnit] -> [SimpleUnit]
 dimensionality' d us = sort $ map dim ub
   where ub = units' $ toBase d us
-        dim (SimpleUnit sym _ pow) = SimpleUnit (unitTypes d M.! sym) "" pow
+        dim (SimpleUnit sym _ pow) = SimpleUnit ('[' : unitTypes d M.! sym ++ "]") "" pow
 
 
 -- | Adds two quantities. Second quantity is converted to units of
