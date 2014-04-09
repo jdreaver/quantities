@@ -1,6 +1,12 @@
 quantities changelog
 ====================
 
+0.3 (unreleased)
+----------------
+
+- Made dimensionality printing nicer.
+- Added doctests and doc coverage tests.
+
 
 0.2 (4-6-2014)
 --------------
