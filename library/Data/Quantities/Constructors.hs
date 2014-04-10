@@ -23,6 +23,14 @@ defaultDefinitions = readDefinitions defaultDefString
 -- >>> fromString "ft + 12in"
 -- Right 2.0 foot
 --
+-- This function also supports unit conversions, by placing \"=>\" in between
+-- two valid expressions.
+--
+-- >>> fromString "min => s"
+-- Right 60.0 second
+-- >>> fromString "2 ft + 6 in => ft"
+-- Right 2.5 foot
+--
 -- Make sure not to use dimensional quantities in exponents.
 --
 -- >>> fromString "m ** 2"

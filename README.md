@@ -23,6 +23,16 @@ Left (UndefinedUnitError "fakeunit")
 Right 2.0 foot
 ```
 
+fromString also supports unit conversions, by placing \"=>\" in between
+two valid expressions.
+
+```
+>>> fromString "min => s"
+Right 60.0 second
+>>> fromString "2 ft + 6 in => ft"
+Right 2.5 foot
+```
+
 The `convert` function is used for unit conversions.
 
 ```haskell

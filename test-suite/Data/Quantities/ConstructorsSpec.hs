@@ -58,6 +58,10 @@ spec = do
       fromString "1 + m" `shouldSatisfy` isLeftDimError
       fromString "N + s" `shouldSatisfy` isLeftDimError
 
+    it "performs unit conversions" $ do
+      fromString "min => s " `shouldBe` makeRightQuant 60 [s]
+      fromString "2 min + 15 s => s" `shouldBe` makeRightQuant 135 [s]
+
 
 isLeftDimError :: Either QuantityError a -> Bool
 isLeftDimError (Left (DimensionalityError _ _)) = True

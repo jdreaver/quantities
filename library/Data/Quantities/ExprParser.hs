@@ -10,7 +10,7 @@ import qualified Data.Map as M
 import Numeric (readFloat)
 import Text.ParserCombinators.Parsec
 
-import Data.Quantities.Convert (addQuants, subtractQuants)
+import Data.Quantities.Convert (addQuants, subtractQuants, convert)
 import Data.Quantities.Data
 
 -- | Alternate definition for spaces. Just actual spaces.
@@ -26,9 +26,23 @@ parseExprQuant d input = case parse (parseExpr d) "arithmetic" input of
 -- | Simple type used for shorthand
 type EQuant = Either QuantityError Quantity
 
--- | Using already compiled definitions, parse expression.
+-- | Using already compiled definitions, parse expression. Also allows for
+-- expressions like "exp1 => exp2" in the middle, which converts the quantity
+-- exp1 into the units of the quantity exp2.
 parseExpr :: Definitions -> Parser EQuant
-parseExpr d = spaces' >> parseExpr' d <* spaces'
+parseExpr d = do
+  _ <- spaces'
+  exp1 <- parseExpr' d <* spaces
+  exp2 <- optionMaybe $ string "=>" >> spaces >> parseExpr' d
+  _ <- spaces'
+  case exp2 of
+    -- No conversion. Just return the first quantity.
+    Nothing      -> return exp1
+    -- Convert the first quantity to the units of the second.
+    (Just exp2') -> return $ do
+      e1 <- exp1
+      e2 <- units <$> exp2'
+      convert e1 e2
 
 parseExpr', parseTerm :: Definitions -> Parser EQuant
 parseFactor, parseExpt, parseNestedExpr :: Definitions -> Parser EQuant
