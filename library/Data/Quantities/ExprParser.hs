@@ -30,19 +30,20 @@ type EQuant = Either QuantityError Quantity
 -- expressions like "exp1 => exp2" in the middle, which converts the quantity
 -- exp1 into the units of the quantity exp2.
 parseExpr :: Definitions -> Parser EQuant
-parseExpr d = do
+parseExpr d = (try (parseConvertExpr d) <|> parseSingle) <* eof
+  where parseSingle = spaces >> parseExpr' d <* spaces
+
+-- | Parser that accepts "=>" in between two expressions.
+parseConvertExpr :: Definitions -> Parser EQuant
+parseConvertExpr d = do
   _ <- spaces'
   exp1 <- parseExpr' d <* spaces
-  exp2 <- optionMaybe $ string "=>" >> spaces >> parseExpr' d
+  exp2 <- string "=>" >> spaces >> parseExpr' d
   _ <- spaces'
-  case exp2 of
-    -- No conversion. Just return the first quantity.
-    Nothing      -> return exp1
-    -- Convert the first quantity to the units of the second.
-    (Just exp2') -> return $ do
-      e1 <- exp1
-      e2 <- units <$> exp2'
-      convert e1 e2
+  return $ do
+    e1 <- exp1
+    e2 <- units <$> exp2
+    convert e1 e2
 
 parseExpr', parseTerm :: Definitions -> Parser EQuant
 parseFactor, parseExpt, parseNestedExpr :: Definitions -> Parser EQuant

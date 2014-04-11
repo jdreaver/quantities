@@ -62,6 +62,9 @@ spec = do
       fromString "min => s " `shouldBe` makeRightQuant 60 [s]
       fromString "2 min + 15 s => s" `shouldBe` makeRightQuant 135 [s]
 
+    it "catches unit conversion errors" $ do
+      fromString "ft => UNDEF" `shouldBe` Left (UndefinedUnitError "UNDEF")
+
 
 isLeftDimError :: Either QuantityError a -> Bool
 isLeftDimError (Left (DimensionalityError _ _)) = True
