@@ -109,6 +109,9 @@ data QuantityError = UndefinedUnitError String
                    | DifferentDefinitionsError CompoundUnit CompoundUnit
                      -- ^ Used when two quantities come from different
                      -- Definitions.
+                   | ScalingFactorError Quantity
+                     -- ^ Used when a scaling factor is present in a unit
+                     -- conversion.
                    deriving (Show, Eq)
 
 

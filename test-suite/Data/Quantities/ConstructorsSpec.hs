@@ -64,6 +64,9 @@ spec = do
 
     it "catches unit conversion errors" $ do
       fromString "ft => UNDEF" `shouldBe` Left (UndefinedUnitError "UNDEF")
+      let scaleq = fromString "m => 3 ft"
+          (Right q) = fromString "3 ft"
+      scaleq `shouldBe` Left (ScalingFactorError q)
 
 
 isLeftDimError :: Either QuantityError a -> Bool

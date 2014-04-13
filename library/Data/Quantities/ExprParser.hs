@@ -42,8 +42,11 @@ parseConvertExpr d = do
   _ <- spaces'
   return $ do
     e1 <- exp1
-    e2 <- units <$> exp2
-    convert e1 e2
+    e2 <- exp2
+    u2 <- units <$> exp2
+    case magnitude e2 of
+      1.0 -> convert e1 u2
+      _   -> Left $ ScalingFactorError e2
 
 parseExpr', parseTerm :: Definitions -> Parser EQuant
 parseFactor, parseExpt, parseNestedExpr :: Definitions -> Parser EQuant
