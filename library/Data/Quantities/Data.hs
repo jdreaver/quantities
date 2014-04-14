@@ -22,7 +22,7 @@ data SimpleUnit = SimpleUnit { symbol :: String
 instance Show SimpleUnit where
   show (SimpleUnit s pr p)
     | p == 1    = sym
-    | otherwise = sym ++ " ** " ++ show p
+    | otherwise = sym ++ " ** " ++ showPower p
     where sym = pr ++ s
 
 -- | Data type to hold compound units, which are simple units multiplied
@@ -39,12 +39,15 @@ instance Show CompoundUnit where
 
 -- | Show a single unit, but prepend with '/' if negative
 showCompUnit' :: SimpleUnit -> String
-showCompUnit' (SimpleUnit s pr p)
-  | p == 1    = sym
-  | p == -1   = "/ " ++ sym
-  | p < 0     = "/ " ++ sym ++ " ** " ++ show (-p)
-  | otherwise = sym ++ " ** " ++ show p
-  where sym = pr ++ s
+showCompUnit' su@(SimpleUnit _ _ p)
+  | p < 0     = "/ " ++ show (su { power = -p })
+  | otherwise = show su
+
+{-# ANN showPower "HLint: ignore Too strict if" #-}
+-- | Removes decimal if almost integer.
+showPower :: Double -> String
+showPower d = if isInt d then show (round d :: Integer) else show d
+  where isInt x = x == fromInteger (round x)
 
 -- | Will be used when we allow pretty printing of fractional units.
 showPrettyNum :: (Show a, Num a) => a -> String
@@ -62,7 +65,7 @@ data Quantity = Quantity { magnitude :: Double
                            -- ^ Units associated with quantity.
                            --
                            -- >>> units <$> fromString "3.4 m/s^2"
-                           -- Right meter / second ** 2.0
+                           -- Right meter / second ** 2
                          } deriving (Ord)
 
 

@@ -26,7 +26,7 @@ convert q us
 -- | Convert a quantity to its base units.
 --
 -- >>> convertBase <$> fromString "newton"
--- Right 1000.0 gram meter / second ** 2.0
+-- Right 1000.0 gram meter / second ** 2
 convertBase :: Quantity -> Quantity
 convertBase x = convertBase' (defs' x) x
 
@@ -66,7 +66,7 @@ simpleToBase d (SimpleUnit sym pre pow) = Quantity m (CompoundUnit d us)
 -- | Computes dimensionality of quantity.
 --
 -- >>> dimensionality <$> fromString "newton"
--- Right [length] [mass] / [time] ** 2.0
+-- Right [length] [mass] / [time] ** 2
 dimensionality :: Quantity -> CompoundUnit
 dimensionality q = CompoundUnit (defs' q) dimUnits
   where dimUnits = dimensionality' (defs' q) (units' q)

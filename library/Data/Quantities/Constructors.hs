@@ -37,7 +37,7 @@ defaultDefinitions = readDefinitions defaultDefString
 -- Make sure not to use dimensional quantities in exponents.
 --
 -- >>> fromString "m ** 2"
--- Right 1.0 meter ** 2.0
+-- Right 1.0 meter ** 2
 -- >>> fromString "m ** (2s)"
 -- Left (ParserError "Used non-dimensionless exponent in ( Right 1.0 meter ) ** ( Right 2.0 second )")
 fromString :: String -> Either QuantityError Quantity
