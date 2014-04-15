@@ -1,7 +1,7 @@
 quantities changelog
 ====================
 
-0.3 (unreleased)
+0.3 (4-15-2014)
 ----------------
 
 - Added unit conversion to fromString using "x => y"

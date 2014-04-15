@@ -1,5 +1,5 @@
 name:                 quantities
-version:              0.2.0
+version:              0.3.0
 author:               John David Reaver <jdreaver@adlerhorst.com>
 maintainer:           John David Reaver <jdreaver@adlerhorst.com>
 build-type:           Simple
