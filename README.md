@@ -23,7 +23,7 @@ Left (UndefinedUnitError "fakeunit")
 Right 2.0 foot
 ```
 
-fromString also supports unit conversions, by placing \"=>\" in between
+fromString also supports unit conversions, by placing "=>" in between
 two valid expressions.
 
 ```

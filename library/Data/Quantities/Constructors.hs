@@ -25,7 +25,7 @@ defaultDefinitions = readDefinitions defaultDefString
 --
 -- This function also supports unit conversions, by placing \"=>\" in between
 -- two valid expressions. This behavior is undefined (and returns a
--- ScalingFactorError) if the quantity to be converted to has a magnitude.
+-- 'ScalingFactorError') if the quantity to be converted to has a magnitude.
 --
 -- >>> fromString "min => s"
 -- Right 60.0 second
