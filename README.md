@@ -39,7 +39,7 @@ The `convert` function is used for unit conversions.
 computation :: Either QuantityError Quantity
 computation = do
   m  <- fromString "30 m"
-  ft <- fmap units $ fromString "ft"
+  ft <- units <$> fromString "ft"
   convert m ft
 ```
 
@@ -48,9 +48,34 @@ computation = do
 Right 98.42519685039369 foot
 ```
 
+## What units are defined?
+
+We have already defined an extensive list of units and SI prefixes. To
+view them, check out
+[this source file](https://github.com/jdreaver/quantities/blob/master/library/Data/Quantities/DefaultUnits.hs).
+
+There is also functionality to modify this file, or create a totally new one.
+
+## How to Contribute
+
+Head over to the [Github repo](https://github.com/jdreaver/quantities)
+to report an issue or create a patch. Also, **non-code contributions
+are always welcome**, especially in this early stage of development.
+That includes, but is not limited to:
+
+* API changes/suggestions
+* Code style suggestions
+* Unclear documentation
+
+Don't feel shy to raise an issue! Any constructive criticism helps.
+
+
 ## TODO
 
+* Handle temperature units. Simple temperature conversions are easy
+  (celsius to farenheit), but compound units with temperatures are
+  tougher.
 * Don't require Double for Quantity. Use any numeric magnitude.
-* Add ability to create units out of order; base quantity does not
+  - Might need typeclass for multiplication/exponentiation by a scalar (double)
+* Add ability to define units out of order; base quantity does not
   already have to be defined, as long as it is defined in the file.
-* Handle temperature.

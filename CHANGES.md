@@ -4,9 +4,9 @@ quantities changelog
 0.3 (unreleased)
 ----------------
 
+- Added unit conversion to fromString using "x => y"
 - Made dimensionality printing nicer.
 - Added doctests and doc coverage tests.
-- Added unit conversion to fromString using "x => y"
 
 
 0.2 (4-6-2014)
