@@ -14,8 +14,8 @@ import Test.Hspec
 d :: Definitions
 (Right d) = defaultDefinitions
 
-isLeft :: Either a b -> Bool
-isLeft = null . rights . return
+isLeft' :: Either a b -> Bool
+isLeft' = null . rights . return
 
 spec :: Spec
 spec = do
@@ -36,7 +36,7 @@ spec = do
 
       it "rejects bad unit" $ do
         let ret = preprocessUnit d bad
-        isLeft ret `shouldBe` True
+        isLeft' ret `shouldBe` True
 
     let qm2 = baseQuant 3 [m2]
     describe "preprocessQuantity" $ do
