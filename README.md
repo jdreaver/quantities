@@ -14,7 +14,7 @@ We provide a string-parsing constructor to create quantities. This
 constructor is built using an expression parser, so arithmetic
 expressions can be used.
 
-```
+```haskell
 >>> fromString "25 m/s"
 Right 25.0 meter / second
 >>> fromString "fakeunit"
@@ -26,7 +26,7 @@ Right 2.0 foot
 fromString also supports unit conversions, by placing "=>" in between
 two valid expressions.
 
-```
+```haskell
 >>> fromString "min => s"
 Right 60.0 second
 >>> fromString "2 ft + 6 in => ft"
@@ -43,7 +43,7 @@ computation = do
   convert m ft
 ```
 
-```
+```haskell
 >>> computation
 Right 98.42519685039369 foot
 ```
