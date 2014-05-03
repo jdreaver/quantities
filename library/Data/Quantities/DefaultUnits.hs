@@ -13,9 +13,9 @@ module Data.Quantities.DefaultUnits (defaultDefString) where
 -- second = min@.
 --
 -- The reason these definitions aren't placed in a text file is so you don't
--- have to operate your whole program in the IO monad. Theoretically, a user of
--- this package can create their own definitions file or modify this one, but a
--- mechanism for doing so hasn't been created yet.
+-- have to operate your whole program in the IO monad. Users can copy this file
+-- into their source and modify definitions, or simply add a few definitions to
+-- the end of this string.
 --
 -- These definitions are taken almost verbatim from the Pint unit conversion
 -- library for the Python programming language. Check them out on
