@@ -1,6 +1,12 @@
 quantities changelog
 ====================
 
+0.4 (unreleased)
+----------------
+
+- Added an executable that is an interface to `fromString`
+
+
 0.3 (4-15-2014)
 ----------------
 

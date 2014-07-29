@@ -48,6 +48,20 @@ computation = do
 Right 98.42519685039369 foot
 ```
 
+## Executable
+
+An executable is included called `quantities`, which is an interface to the
+`fromString` function.
+
+```bash
+$ quantities -h
+Usage: quantities [-vh] expression
+$ quantities "10 bbl/sec => m^3/min"
+95.39237695680004 meter ** 3 / minute
+$ quantities "fakeunit"
+UndefinedUnitError "fakeunit"
+```
+
 ## What units are defined?
 
 We have already defined an extensive list of units and SI prefixes. To

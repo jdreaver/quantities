@@ -39,6 +39,13 @@ library
                     , Data.Quantities.DefinitionParser
                     , Data.Quantities.ExprParser
 
+executable quantities
+    default-language: Haskell2010
+    Hs-Source-Dirs:   .
+    Main-Is:          quantities.hs
+    build-depends:    base >=4 && < 5, quantities, containers, mtl, parsec
+    Buildable:        True
+
 test-suite hspec
     default-language: Haskell2010
     ghc-options:      -Wall
