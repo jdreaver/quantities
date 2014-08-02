@@ -18,6 +18,7 @@ spec = do
         s   = SimpleUnit "second" "" 1
         ft  = SimpleUnit "foot" "" 1
         sn1 = SimpleUnit "second" "" (-1)
+        g   = SimpleUnit "gram" "" 1
     it "parses numbers" $ do
       fromString "1"  `shouldBe` makeRightQuant 1  []
       fromString "-2" `shouldBe` makeRightQuant (-2) []
@@ -67,6 +68,13 @@ spec = do
       let scaleq = fromString "m => 3 ft"
           (Right q) = fromString "3 ft"
       scaleq `shouldBe` Left (ScalingFactorError q)
+
+    it "allows use of 'per' for division" $ do
+      fromString "m per s" `shouldBe` makeRightQuant 1 [m, s { power = -1} ]
+      fromString "4 per 2" `shouldBe` makeRightQuant 2 []
+      let expect = makeRightQuant 2 [m, g {power = -1}, sn1]
+      fromString "2m per s per g" `shouldBe` expect
+      fromString "mper s" `shouldBe` Left (UndefinedUnitError "mper")
 
 
 isLeftDimError :: Either QuantityError a -> Bool
