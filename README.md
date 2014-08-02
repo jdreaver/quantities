@@ -93,3 +93,8 @@ Don't feel shy to raise an issue! Any constructive criticism helps.
   - Might need typeclass for multiplication/exponentiation by a scalar (double)
 * Add ability to define units out of order; base quantity does not
   already have to be defined, as long as it is defined in the file.
+* Allow plural form of units. Try to find plural only if no other units can be
+  parsed, or else "ms" will be a plural for meters.
+* Allow use of " to " instead of "=>". Because of parser architecture, need to
+  detect either of these tokens before actually parsing units. Otherwise, it
+  will think "to" is a bad unit.
