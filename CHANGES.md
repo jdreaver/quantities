@@ -5,6 +5,7 @@ quantities changelog
 ----------------
 
 - Added an executable that is an interface to `fromString`
+- Can use " per " as a synonym for "=>" in `fromString`
 
 
 0.3 (4-15-2014)
