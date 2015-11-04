@@ -4,6 +4,9 @@ quantities changelog
 0.4 (unreleased)
 ----------------
 
+- Changed type of `Quantity` to `Quantity a`, where `a` is the type of the
+  magnitude. Note that `a` should be an instance of `Floating` to get the most
+  out of the available operations on quantities.
 - Added an executable that is an interface to `fromString`
 - Can use " per " as a synonym for "=>" in `fromString`
 

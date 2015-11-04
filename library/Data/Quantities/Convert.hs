@@ -15,7 +15,8 @@ import Data.Quantities.Data
 --
 -- >>> convert <$> fromString "m" <*> unitsFromString "ft"
 -- Right (Right 3.280839895013123 foot)
-convert :: Quantity -> CompoundUnit -> Either QuantityError Quantity
+convert :: (Fractional a) => Quantity a -> CompoundUnit ->
+           Either (QuantityError a) (Quantity a)
 convert q us
   | hq /= hus = Left  $ DifferentDefinitionsError (units q) us
   | otherwise = convert' (defs us) q us
@@ -27,15 +28,16 @@ convert q us
 --
 -- >>> convertBase <$> fromString "newton"
 -- Right 1000.0 gram meter / second ** 2
-convertBase :: Quantity -> Quantity
+convertBase :: (Fractional a) => Quantity a -> Quantity a
 convertBase x = convertBase' (defs' x) x
 
 
 -- | Convert quantity to given units.
-convert' :: Definitions -> Quantity -> CompoundUnit -> Either QuantityError Quantity
+convert' :: (Fractional a) => Definitions -> Quantity a -> CompoundUnit ->
+            Either (QuantityError a) (Quantity a)
 convert' d q us'
   | dimq /= dimus = Left  $ DimensionalityError (CompoundUnit d dimq) (CompoundUnit d dimus)
-  | otherwise     = Right $ Quantity (mb/mb') us'
+  | otherwise     = Right $ Quantity (mb / realToFrac mb') us'
   where mb    = magnitude $ convertBase' d q
         mb'   = magnitude $ toBase d (sUnits us')
         dimq  = dimensionality' d (units' q)
@@ -44,19 +46,19 @@ convert' d q us'
 
 
 -- | Convert a quantity to its base units.
-convertBase' :: Definitions -> Quantity -> Quantity
-convertBase' d (Quantity m us) = Quantity (m*mb) ub
+convertBase' :: (Fractional a) => Definitions -> Quantity a -> Quantity a
+convertBase' d (Quantity m us) = Quantity (m * realToFrac mb) ub
   where (Quantity mb ub) = toBase d (sUnits us)
 
 
 -- | Converts a composite unit to its base quantity
-toBase :: Definitions -> [SimpleUnit] -> Quantity
+toBase :: Definitions -> [SimpleUnit] -> Quantity Double
 toBase d = foldr (multiplyQuants . simpleToBase d) unityQuant
   where unityQuant = Quantity 1 (CompoundUnit d [])
 
 
 -- | Converts a simple unit to its base quantity.
-simpleToBase :: Definitions -> SimpleUnit -> Quantity
+simpleToBase :: Definitions -> SimpleUnit -> Quantity Double
 simpleToBase d (SimpleUnit sym pre pow) = Quantity m (CompoundUnit d us)
   where (m', u') = bases d M.! sym
         us = map (\(SimpleUnit s p pow') -> SimpleUnit s p (pow*pow')) u'
@@ -67,7 +69,7 @@ simpleToBase d (SimpleUnit sym pre pow) = Quantity m (CompoundUnit d us)
 --
 -- >>> dimensionality <$> fromString "newton"
 -- Right [length] [mass] / [time] ** 2
-dimensionality :: Quantity -> CompoundUnit
+dimensionality :: Quantity a -> CompoundUnit
 dimensionality q = CompoundUnit (defs' q) dimUnits
   where dimUnits = dimensionality' (defs' q) (units' q)
 
@@ -82,18 +84,20 @@ dimensionality' d us = sort $ map dim ub
 
 -- | Adds two quantities. Second quantity is converted to units of
 -- first quantity.
-addQuants :: Quantity -> Quantity -> Either QuantityError Quantity
+addQuants :: (Fractional a) => Quantity a -> Quantity a ->
+             Either (QuantityError a) (Quantity a)
 addQuants = linearQuants (+)
 
 
 -- | Subtract two quantities. Second quantity is converted to units of
 -- first quantity.
-subtractQuants :: Quantity -> Quantity -> Either QuantityError Quantity
+subtractQuants :: (Fractional a) => Quantity a -> Quantity a ->
+                  Either (QuantityError a) (Quantity a)
 subtractQuants = linearQuants (-)
 
 -- | Helper function used in addQuants and subtractQuants.
-linearQuants :: (Double -> Double -> Double) -> Quantity -> Quantity
-                -> Either QuantityError Quantity
+linearQuants :: (Fractional a) => (a -> a -> a) -> Quantity a -> Quantity a
+                -> Either (QuantityError a) (Quantity a)
 linearQuants f (Quantity m1 u1) q2 = case q of
   (Right q') -> Right $ Quantity (f m1 (magnitude q')) u1
   (Left err) -> Left err

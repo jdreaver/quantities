@@ -7,7 +7,7 @@ import Test.Hspec
 
 {-# ANN module "HLint: ignore Redundant do" #-}
 
-defaultQuant :: Double -> [SimpleUnit] -> Quantity
+defaultQuant :: Double -> [SimpleUnit] -> Quantity Double
 defaultQuant m us = Quantity m (defaultUnits us)
 
 defaultUnits :: [SimpleUnit] -> CompoundUnit

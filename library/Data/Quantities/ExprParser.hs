@@ -18,13 +18,14 @@ spaces' :: Parser String
 spaces' = many $ char ' '
 
 -- | Parse quantity expression; addition and subtraction allowed.
-parseExprQuant :: Definitions -> String -> Either QuantityError Quantity
+parseExprQuant :: Definitions -> String ->
+                  Either (QuantityError Double) (Quantity Double)
 parseExprQuant d input = case parse (parseExpr d) "arithmetic" input of
   Left err  -> Left $ ParserError $ show err
   Right val -> val
 
 -- | Simple type used for shorthand
-type EQuant = Either QuantityError Quantity
+type EQuant = Either (QuantityError Double) (Quantity Double)
 
 -- | Using already compiled definitions, parse expression. Also allows for
 -- expressions like "exp1 => exp2" in the middle, which converts the quantity
@@ -126,7 +127,7 @@ parseENum d = do
   return $ Right $ q { units = (units q) { defs = d } }
 
 -- | Parses out prefixes and aliases from quantity's units.
-preprocessQuantity :: Definitions -> Quantity -> Either QuantityError Quantity
+preprocessQuantity :: Definitions -> Quantity Double -> EQuant
 preprocessQuantity d (Quantity x us)
   | null errs = Right $ Quantity x (CompoundUnit d us')
   | otherwise = Left  $ head errs
@@ -134,7 +135,7 @@ preprocessQuantity d (Quantity x us)
           (errs, us') = partitionEithers ppUnits
 
 -- | Parses prefix and alias, if applicable, from a SimpleUnit.
-preprocessUnit :: Definitions -> SimpleUnit -> Either QuantityError SimpleUnit
+preprocessUnit :: Definitions -> SimpleUnit -> Either (QuantityError Double) SimpleUnit
 preprocessUnit d (SimpleUnit s _ p)
   | rs `elem` unitsList d = Right $ SimpleUnit ns np p
   | otherwise             = Left  $ UndefinedUnitError s
@@ -160,10 +161,10 @@ prefixParser' d = do
 -- | Converts string to a Quantity using an expression grammar parser. This
 -- parser does not parser addition or subtraction, and is used for unit
 -- definitions.
-parseMultExpr :: Parser Quantity
+parseMultExpr :: Parser (Quantity Double)
 parseMultExpr = spaces' >> parseMultExpr' <* spaces'
 
-parseMultExpr', parseMultFactor, parseMultExpt, parseMultNestedExpr :: Parser Quantity
+parseMultExpr', parseMultFactor, parseMultExpt, parseMultNestedExpr :: Parser (Quantity Double)
 parseMultExpr'      = try parseMultFactorOp   <|> parseMultFactor
 parseMultFactor     = try parseMultExptOp     <|> parseMultExpt
 parseMultExpt       = try parseMultNestedExpr <|> parseSymbolNum
@@ -172,11 +173,11 @@ parseMultNestedExpr = spaces' >> char '(' *> spaces' >>
                       <* spaces' <* char ')' <* spaces' <?> "parseNested"
 
 
-parseMultExptOp, parseMultFactorOp :: Parser Quantity
+parseMultExptOp, parseMultFactorOp :: Parser (Quantity Double)
 parseMultExptOp     = parseMultExpt   `chainl1` exptMultOp
 parseMultFactorOp   = parseMultFactor `chainl1` mulMultOp
 
-exptMultOp, mulMultOp :: Parser (Quantity -> Quantity -> Quantity)
+exptMultOp, mulMultOp :: Parser (Quantity Double -> Quantity Double -> Quantity Double)
 mulMultOp = try parseTimes <|> try parseDiv <|> parseImplicitTimes <?> "mulMultOp"
   where parseTimes         = char '*' >> spaces' >> return multiplyQuants
         parseDiv           = char '/' >> spaces' >> return divideQuants
@@ -184,18 +185,18 @@ mulMultOp = try parseTimes <|> try parseDiv <|> parseImplicitTimes <?> "mulMultO
 exptMultOp = try (opChoice >> spaces' >> return exptMultQuants') <?> "expMultOp"
   where opChoice = string "^" <|> string "**"
 
-exptMultQuants' :: Quantity -> Quantity -> Quantity
+exptMultQuants' :: (Quantity Double -> Quantity Double -> Quantity Double)
 exptMultQuants' q (Quantity y (CompoundUnit _ [])) = exptQuants q y
 exptMultQuants' a b  = error $ "Used non-dimensionless exponent in " ++ showq
   where showq = unwords ["(", show a, ") ** (", show b, ")"]
 
 -- | Parse either a symbol or a number.
-parseSymbolNum :: Parser Quantity
+parseSymbolNum :: Parser (Quantity Double)
 parseSymbolNum = try parseNum <|> parseSymbol'
 
 -- | Parse a symbol with an optional negative sign. A symbol can contain
 -- alphanumeric characters and the character '_'.
-parseSymbol' :: Parser Quantity
+parseSymbol' :: Parser (Quantity Double)
 parseSymbol' = do
   neg  <- option "" $ string "-"
   symf <- letter
@@ -204,7 +205,7 @@ parseSymbol' = do
   return $ baseQuant (timesSign neg 1) [SimpleUnit (symf : rest) "" 1]
 
 -- | Parent function for parseNum' to parse a number.
-parseNum :: Parser Quantity
+parseNum :: Parser (Quantity Double)
 parseNum = do
   num <- parseNum'
   return $ baseQuant num []

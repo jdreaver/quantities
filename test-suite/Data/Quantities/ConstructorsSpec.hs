@@ -7,7 +7,7 @@ import Test.Hspec
 
 {-# ANN module "HLint: ignore Redundant do" #-}
 
-makeRightQuant :: Double -> [SimpleUnit] -> Either QuantityError Quantity
+makeRightQuant :: Double -> [SimpleUnit] -> Either (QuantityError Double) (Quantity Double)
 makeRightQuant m u = Right (baseQuant m u)
 
 spec :: Spec
@@ -77,6 +77,6 @@ spec = do
       fromString "mper s" `shouldBe` Left (UndefinedUnitError "mper")
 
 
-isLeftDimError :: Either QuantityError a -> Bool
+isLeftDimError :: Either (QuantityError a) b -> Bool
 isLeftDimError (Left (DimensionalityError _ _)) = True
 isLeftDimError _ = False

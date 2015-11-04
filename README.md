@@ -89,8 +89,6 @@ Don't feel shy to raise an issue! Any constructive criticism helps.
 * Handle temperature units. Simple temperature conversions are easy
   (celsius to farenheit), but compound units with temperatures are
   tougher.
-* Don't require Double for Quantity. Use any numeric magnitude.
-  - Might need typeclass for multiplication/exponentiation by a scalar (double)
 * Add ability to define units out of order; base quantity does not
   already have to be defined, as long as it is defined in the file.
 * Allow plural form of units. Try to find plural only if no other units can be

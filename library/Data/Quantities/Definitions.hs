@@ -15,17 +15,17 @@ import Data.Quantities.ExprParser (preprocessQuantity)
 
 -- | Convert string of definitions into 'Definitions' structure. See source
 -- code for 'Data.Quantities.defaultDefString' for an example.
-readDefinitions :: String -> Either QuantityError Definitions
+readDefinitions :: String -> Either (QuantityError Double) Definitions
 readDefinitions s = addDefinitionsHash s <$> d
   where d = makeDefinitions (parseDefinitions s)
 
 -- | Monad used for addDefinition.
-type DefineMonad = StateT Definitions (Either QuantityError)
+type DefineMonad = StateT Definitions (Either (QuantityError Double))
 
 -- | Converts a list of definitions to the Definitions data structure. Modifies
 -- an emptyDefinitions object by combining the incremental additions of each
 -- Definition.
-makeDefinitions :: [Definition] -> Either QuantityError Definitions
+makeDefinitions :: [Definition] -> Either (QuantityError Double) Definitions
 makeDefinitions ds = execStateT (mapM addDefinition ds) emptyDefinitions
 
 -- | Add one definition to the definitions. Creates a new Definitions object

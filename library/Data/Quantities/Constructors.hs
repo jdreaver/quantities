@@ -7,7 +7,7 @@ import Data.Quantities.Definitions (readDefinitions)
 import Data.Quantities.ExprParser (parseExprQuant)
 
 -- | Default set of definitions that come predefined.
-defaultDefinitions :: Either QuantityError Definitions
+defaultDefinitions :: Either (QuantityError Double) Definitions
 defaultDefinitions = readDefinitions defaultDefString
 
 -- $setup
@@ -40,7 +40,7 @@ defaultDefinitions = readDefinitions defaultDefString
 -- Right 1.0 meter ** 2
 -- >>> fromString "m ** (2s)"
 -- Left (ParserError "Used non-dimensionless exponent in ( Right 1.0 meter ) ** ( Right 2.0 second )")
-fromString :: String -> Either QuantityError Quantity
+fromString :: String -> Either (QuantityError Double) (Quantity Double)
 fromString s = case defaultDefinitions of
                     (Right d) -> parseExprQuant d s
                     (Left d)  -> Left d
@@ -53,7 +53,7 @@ fromString s = case defaultDefinitions of
 -- >>> let myFromString = fromString' d
 -- >>> myFromString "25 my_unit"
 -- Right 25.0 my_unit
-fromString' :: Definitions -> String -> Either QuantityError Quantity
+fromString' :: Definitions -> String -> Either (QuantityError Double) (Quantity Double)
 fromString' = parseExprQuant
 
 
@@ -61,5 +61,5 @@ fromString' = parseExprQuant
 --
 -- >>> unitsFromString "N * s"
 -- Right newton second
-unitsFromString :: String -> Either QuantityError CompoundUnit
+unitsFromString :: String -> Either (QuantityError Double) CompoundUnit
 unitsFromString = fmap units . fromString

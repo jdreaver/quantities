@@ -9,12 +9,12 @@ mm2, s :: SimpleUnit
 mm2 = SimpleUnit "meter" "milli" 2
 s = SimpleUnit "second" "" 1
 
-mm2quant, squant :: Quantity
+mm2quant, squant :: Quantity Double
 mm2quant = baseQuant 4 [mm2]
 squant = baseQuant 2 [s]
 
 
-testQuant :: Quantity
+testQuant :: Quantity Double
 testQuant = baseQuant 5 [mm2]
 
 spec :: Spec
@@ -31,7 +31,7 @@ spec = do
 
     describe "Reduce units" $ do
       it "should work" $ do
-        let rmm2 = baseQuant 1 (replicate 2 mm2)
+        let rmm2 = baseQuant 1 (replicate 2 mm2) :: Quantity Double
         units' (reduceUnits rmm2) `shouldBe` [mm2 {power=4}]
 
     describe "invertSimpleUnit" $ do

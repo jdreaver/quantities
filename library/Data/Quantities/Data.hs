@@ -56,34 +56,33 @@ showPrettyNum x = map (pretty M.!) $ show x
 
 
 -- | Combination of magnitude and units.
-data Quantity = Quantity { magnitude :: Double
-                           -- ^ Numerical magnitude of quantity.
-                           --
-                           -- >>> magnitude <$> fromString "100 N * m"
-                           -- Right 100.0
-                         , units     :: CompoundUnit
-                           -- ^ Units associated with quantity.
-                           --
-                           -- >>> units <$> fromString "3.4 m/s^2"
-                           -- Right meter / second ** 2
-                         } deriving (Ord)
+data Quantity a = Quantity
+  { magnitude :: a            -- ^ Numerical magnitude of quantity.
+                              --
+                              -- >>> magnitude <$> fromString "100 N * m"
+                              -- Right 100.0
+  , units     :: CompoundUnit -- ^ Units associated with quantity.
+                              --
+                              -- >>> units <$> fromString "3.4 m/s^2"
+                              -- Right meter / second ** 2
+  } deriving (Ord)
 
 
 -- | Convenience function to extract SimpleUnit collection from Quantity's
 -- CompoundUnit.
-units' :: Quantity -> [SimpleUnit]
+units' :: Quantity a -> [SimpleUnit]
 units' = sUnits . units
 
 -- | Convenience function to extract Definitions from Quantity's CompoundUnit.
-defs' :: Quantity -> Definitions
+defs' :: Quantity a -> Definitions
 defs' = defs . units
 
-instance Show Quantity where
+instance (Show a) => Show (Quantity a) where
   show (Quantity m us) = show m ++ " " ++ show us
 
 
 -- | Convenience function to make quantity with no definitions.
-baseQuant :: Double -> [SimpleUnit] -> Quantity
+baseQuant :: a -> [SimpleUnit] -> Quantity a
 baseQuant m us = Quantity m (CompoundUnit emptyDefinitions us)
 
 -- | Sort units but put negative units at end.
@@ -91,31 +90,31 @@ showSort :: [SimpleUnit] -> [SimpleUnit]
 showSort c = pos ++ neg
   where (pos, neg) = partition (\q -> power q > 0) c
 
-instance Eq Quantity where
+instance (Eq a) => Eq (Quantity a) where
   (Quantity m1 u1) == (Quantity m2 u2) = m1 == m2 && sort (sUnits u1) == sort (sUnits u2)
 
 
 -- | Custom error type
-data QuantityError = UndefinedUnitError String
-                     -- ^ Used when trying to parse an undefined unit.
-                   | DimensionalityError CompoundUnit CompoundUnit
-                     -- ^ Used when converting units that do not have the same
-                     -- dimensionality (example: convert meter to second).
-                   | UnitAlreadyDefinedError String
-                     -- ^ Used internally when defining units and a unit is
-                     -- already defined.
-                   | PrefixAlreadyDefinedError String
-                     -- ^ Used internally when defining units and a prefix is
-                     -- already defined.
-                   | ParserError String
-                     -- ^ Used when a string cannot be parsed.
-                   | DifferentDefinitionsError CompoundUnit CompoundUnit
-                     -- ^ Used when two quantities come from different
-                     -- Definitions.
-                   | ScalingFactorError Quantity
-                     -- ^ Used when a scaling factor is present in a unit
-                     -- conversion.
-                   deriving (Show, Eq)
+data QuantityError a = UndefinedUnitError String
+                       -- ^ Used when trying to parse an undefined unit.
+                     | DimensionalityError CompoundUnit CompoundUnit
+                       -- ^ Used when converting units that do not have the same
+                       -- dimensionality (example: convert meter to second).
+                     | UnitAlreadyDefinedError String
+                       -- ^ Used internally when defining units and a unit is
+                       -- already defined.
+                     | PrefixAlreadyDefinedError String
+                       -- ^ Used internally when defining units and a prefix is
+                       -- already defined.
+                     | ParserError String
+                       -- ^ Used when a string cannot be parsed.
+                     | DifferentDefinitionsError CompoundUnit CompoundUnit
+                       -- ^ Used when two quantities come from different
+                       -- Definitions.
+                     | ScalingFactorError (Quantity a)
+                       -- ^ Used when a scaling factor is present in a unit
+                       -- conversion.
+                     deriving (Show, Eq)
 
 
 -- | Useful for monadic computations with 'QuantityError's. Some examples:
@@ -134,10 +133,10 @@ data QuantityError = UndefinedUnitError String
 -- >   convertBase x
 --
 -- Returns @Left (UndefinedUnitError "BADUNIT")@
-type QuantityComputation = Either QuantityError
+type QuantityComputation a = Either (QuantityError a)
 
 -- | Combines equivalent units and removes units with powers of zero.
-reduceUnits :: Quantity -> Quantity
+reduceUnits :: Quantity a -> Quantity a
 reduceUnits q = q { units = newUnits }
   where newUnits = (units q) { sUnits = reduceUnits' (units' q) }
 
@@ -166,21 +165,21 @@ invertSimpleUnit :: SimpleUnit -> SimpleUnit
 invertSimpleUnit (SimpleUnit s pr p) = SimpleUnit s pr (-p)
 
 -- | Multiplies two quantities.
-multiplyQuants :: Quantity -> Quantity -> Quantity
+multiplyQuants :: (Num a) => Quantity a -> Quantity a -> Quantity a
 multiplyQuants x y = reduceUnits $ Quantity mag newUnits
   where mag      = magnitude x * magnitude y
         newUnits = (units x) { sUnits = units' x ++ units' y }
 
 -- | Divides two quantities.
-divideQuants :: Quantity -> Quantity -> Quantity
+divideQuants :: (Fractional a) => Quantity a -> Quantity a -> Quantity a
 divideQuants x y = reduceUnits $ Quantity mag newUnits
   where mag      = magnitude x / magnitude y
         newUnits = (units x) { sUnits = units' x ++ invertUnits (units' y) }
 
--- | Exponentiates a quantity with a double.
-exptQuants :: Quantity -> Double -> Quantity
+-- | Exponentiates a quantity with an integer
+exptQuants :: (Real a, Floating a) => Quantity a -> a -> Quantity a
 exptQuants (Quantity x u) y = reduceUnits $ Quantity (x**y) newUnits
-  where expUnits = map (\(SimpleUnit s pr p) -> SimpleUnit s pr (p*y))
+  where expUnits = map (\(SimpleUnit s pr p) -> SimpleUnit s pr (p * realToFrac y))
         newUnits = u { sUnits = expUnits (sUnits u) }
 
 -- | Data type for the three definition types. Used to hold definitions
@@ -192,7 +191,7 @@ data Definition = PrefixDefinition { defPrefix   :: Symbol
                                    , dimBase     :: Symbol
                                    , defSynonyms ::[Symbol]}
                 | UnitDefinition   { defSymbol   :: Symbol
-                                   , quantity    :: Quantity
+                                   , quantity    :: Quantity Double
                                    , defSynonyms :: [Symbol]} deriving (Show, Eq, Ord)
 
 -- | Holds information about defined units, prefixes, and bases. Used when
