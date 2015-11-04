@@ -1,10 +1,10 @@
 name:                 quantities
 version:              0.4.0
-author:               John David Reaver <jdreaver@adlerhorst.com>
-maintainer:           John David Reaver <jdreaver@adlerhorst.com>
+author:               John David Reaver <johndreaver@gmail.com>
+maintainer:           John David Reaver <johndreaver@gmail.com>
 build-type:           Simple
 cabal-version:        >= 1.18
-copyright:            2014 John David Reaver
+copyright:            Copyright (c) 2014-2015 John David Reaver
 license:              BSD3
 license-file:         LICENSE
 synopsis:             Unit conversion and manipulation library.
