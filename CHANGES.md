@@ -1,7 +1,7 @@
 quantities changelog
 ====================
 
-0.4 (unreleased)
+0.4 (11-7-2015)
 ----------------
 
 - Changed type of `Quantity` to `Quantity a`, where `a` is the type of the
