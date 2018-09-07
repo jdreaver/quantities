@@ -1,14 +1,16 @@
-name:                 quantities
-version:              0.5.0
-author:               John David Reaver <johndreaver@gmail.com>
-maintainer:           John David Reaver <johndreaver@gmail.com>
+name:                 jinquantities
+version:              0.1.0
+author:               Eliott Tixier <eliott.tixier@novadiscovery.com>
+maintainer:           Eliott Tixier <eliott.tixier@novadiscovery.com>
 build-type:           Simple
 cabal-version:        >= 1.18
-copyright:            Copyright (c) 2014-2015 John David Reaver
+copyright:            Copyright (c) 2018-2019 Eliott Tixier, Novadiscovery
 license:              BSD3
 license-file:         LICENSE
 synopsis:             Unit conversion and manipulation library.
-description:          A library for creating and manipulating physical
+description:          Credit goes to https://github.com/jdreaver/quantities
+                      from which this package is initially a fork.
+                      A library for creating and manipulating physical
                       quantities, which are a numerical value
                       associated with a unit of measurement. Included
                       is an expression parser and a huge list of
@@ -21,7 +23,7 @@ description:          A library for creating and manipulating physical
                       simplification.
 
 category:             Data, Math, Physics
-homepage:             http://github.com/jdreaver/quantities
+homepage:             http://github.com/eltix/quantities
 extra-source-files:   CHANGES.md
 
 
@@ -34,7 +36,7 @@ library
                     , Data.Quantities.DefaultUnits
                     , Data.Quantities.Definitions
                     , Data.Quantities.DefinitionParser
-                    , Data.Quantities.ExprParser    
+                    , Data.Quantities.ExprParser
     hs-source-dirs:   library
     ghc-options:      -Wall
     build-depends:    base >=4 && < 5, containers, mtl, parsec
@@ -77,4 +79,4 @@ test-suite coverage
 
 source-repository head
     type:     git
-    location: https://github.com/jdreaver/quantities.git
+    location: https://github.com/etixier/quantities.git

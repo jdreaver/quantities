@@ -1,8 +1,7 @@
 # Quantities
 
-[![Build Status](https://travis-ci.org/jdreaver/quantities.svg?branch=master)](https://travis-ci.org/jdreaver/quantities)
-
 Unit conversion and manipulation library for Haskell.
+Credit goes to https://github.com/jdreaver/quantities from which this repo is a fork.
 
 ## Documentation
 
@@ -66,13 +65,13 @@ UndefinedUnitError "fakeunit"
 
 We have already defined an extensive list of units and SI prefixes. To
 view them, check out
-[this source file](https://github.com/jdreaver/quantities/blob/master/library/Data/Quantities/DefaultUnits.hs).
+[this source file](https://github.com/etixier/quantities/blob/master/library/Data/Quantities/DefaultUnits.hs).
 
 There is also functionality to modify this file, or create a totally new one.
 
 ## How to Contribute
 
-Head over to the [Github repo](https://github.com/jdreaver/quantities)
+Head over to the [Github repo](https://github.com/etixier/quantities)
 to report an issue or create a patch. Also, **non-code contributions
 are always welcome**, especially in this early stage of development.
 That includes, but is not limited to:
