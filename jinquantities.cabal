@@ -1,18 +1,18 @@
 name:                 jinquantities
-version:              0.1.0
-author:               Eliott Tixier <eliott.tixier@novadiscovery.com>
-maintainer:           Eliott Tixier <eliott.tixier@novadiscovery.com>
+version:              0.1.1
+author:               Novadiscovery <eliott.tixier@novadiscovery.com>
+maintainer:           Novadiscovery <eliott.tixier@novadiscovery.com>
 build-type:           Simple
 cabal-version:        >= 1.18
-copyright:            Copyright (c) 2018-2019 Eliott Tixier, Novadiscovery
+copyright:            Copyright (c) 2018-2019 Novadiscovery
 license:              BSD3
 license-file:         LICENSE
 synopsis:             Unit conversion and manipulation library.
-description:          Credit goes to https://github.com/jdreaver/quantities
-                      from which this package is initially a fork.
-                      A library for creating and manipulating physical
+description:          A library for creating and manipulating physical
                       quantities, which are a numerical value
-                      associated with a unit of measurement. Included
+                      associated with a unit of measurement.
+                      Credit goes to https://github.com/jdreaver/quantities
+                      from which this package is initially a fork. Included
                       is an expression parser and a huge list of
                       predefined quantities with which to parse
                       strings into a Quantity datatype. Once created,
