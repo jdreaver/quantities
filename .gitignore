@@ -4,3 +4,5 @@ dist/
 *.hi
 *.o
 cabal.sandbox.config
+.stack-work
+stack.yaml

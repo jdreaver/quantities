@@ -45,7 +45,7 @@ executable quantities
     default-language: Haskell2010
     Hs-Source-Dirs:   .
     Main-Is:          quantities.hs
-    build-depends:    base >=4 && < 5, quantities, containers, mtl, parsec
+    build-depends:    base >=4 && < 5, jinquantities, containers, mtl, parsec
     Buildable:        True
 
 test-suite hspec
@@ -54,7 +54,7 @@ test-suite hspec
     hs-source-dirs:   test-suite library
     main-is:          Spec.hs
     type:             exitcode-stdio-1.0
-    build-depends:    base >=4 && < 5, quantities, hspec, containers, mtl, parsec
+    build-depends:    base >=4 && < 5, jinquantities, hspec, containers, mtl, parsec
 
 test-suite hlint
     build-depends:    base, hlint
@@ -79,4 +79,4 @@ test-suite coverage
 
 source-repository head
     type:     git
-    location: https://github.com/etixier/quantities.git
+    location: https://github.com/eltix/quantities.git
