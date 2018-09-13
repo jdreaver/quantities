@@ -25,6 +25,7 @@ description:          A library for creating and manipulating physical
 category:             Data, Math, Physics
 homepage:             http://github.com/eltix/quantities
 extra-source-files:   CHANGES.md
+Tested-With: GHC == 8.4.3
 
 
 library
