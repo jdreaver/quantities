@@ -69,6 +69,7 @@ test-suite doctest
     hs-source-dirs:   test-suite
     main-is:          DocTest.hs
     type:             exitcode-stdio-1.0
+    build-tool-depends: doctest:doctest
 
 test-suite coverage
     build-depends:    base, process, regex-compat

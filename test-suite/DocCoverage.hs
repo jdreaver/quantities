@@ -1,10 +1,10 @@
 module Main (main) where
 
-import Data.List (genericLength)
-import Data.Maybe (catMaybes)
-import System.Exit (exitFailure, exitSuccess)
-import System.Process (readProcess)
-import Text.Regex (matchRegex, mkRegex)
+import           Data.List      (genericLength)
+import           Data.Maybe     (mapMaybe)
+import           System.Exit    (exitFailure, exitSuccess)
+import           System.Process (readProcess)
+import           Text.Regex     (matchRegex, mkRegex)
 
 average :: (Fractional a, Real b) => [b] -> a
 average xs = realToFrac (sum xs) / genericLength xs
@@ -20,6 +20,6 @@ main = do
         else putStr output >> exitFailure
 
 match :: String -> [Int]
-match = fmap read . concat . catMaybes . fmap (matchRegex pattern) . lines
+match = fmap read . concat . mapMaybe (matchRegex pat) . lines
   where
-    pattern = mkRegex "^ *([0-9]*)% "
+    pat = mkRegex "^ *([0-9]*)% "

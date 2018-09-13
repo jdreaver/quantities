@@ -4,14 +4,15 @@
 -- and units.
 module Data.Quantities.ExprParser  where
 
-import Control.Applicative ((<*>), (<$>), (*>), (<*))
-import Data.Either (partitionEithers)
-import qualified Data.Map as M
-import Numeric (readFloat)
-import Text.ParserCombinators.Parsec
+import           Control.Applicative           ((*>), (<$>), (<*), (<*>))
+import           Data.Either                   (partitionEithers)
+import qualified Data.Map                      as M
+import           Numeric                       (readFloat)
+import           Text.ParserCombinators.Parsec
 
-import Data.Quantities.Convert (addQuants, subtractQuants, convert)
-import Data.Quantities.Data
+import           Data.Quantities.Convert       (addQuants, convert,
+                                                subtractQuants)
+import           Data.Quantities.Data
 
 -- | Alternate definition for spaces. Just actual spaces.
 spaces' :: Parser String
@@ -116,9 +117,7 @@ parseESymbolNum d = try (parseENum d) <|> parseESymbol d
 
 -- | Parses a symbol and then parses a prefix form that symbol.
 parseESymbol :: Definitions -> Parser EQuant
-parseESymbol d = do
-  q <- parseSymbol'
-  return $ preprocessQuantity d q
+parseESymbol d = preprocessQuantity d <$> parseSymbol'
 
 -- | Parse a number and insert the given definitions into the CompoundUnit.
 parseENum :: Definitions -> Parser EQuant
@@ -148,7 +147,7 @@ prefixParser :: Definitions -> String -> (String, String)
 prefixParser d input = if input `elem` unitsList d
                           then ("", input)
                           else case parse (prefixParser' d) "arithmetic" input of
-                            Left _ -> ("", input)
+                            Left _    -> ("", input)
                             Right val -> splitAt (length val) input
 
 -- | Helper function for prefixParser that is a Parsec parser.
