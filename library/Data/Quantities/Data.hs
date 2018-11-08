@@ -1,8 +1,12 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+
 -- | Base module for all data structures.
 module Data.Quantities.Data where
 
-import Data.List (partition, sort)
-import qualified Data.Map as M
+import           Control.Exception (Exception)
+import           Data.List         (partition, sort)
+import qualified Data.Map          as M
+import           Data.Typeable     (Typeable)
 
 -- $setup
 -- >>> import Control.Applicative
@@ -131,6 +135,8 @@ instance Show a => Show (QuantityError a) where
         "come from different definitions and can't be used together"
     ScalingFactorError x ->
       "Unexpected scaling factor " ++ show x
+
+instance (Show a, Typeable a) => Exception (QuantityError a)
 
 -- | Useful for monadic computations with 'QuantityError's. Some examples:
 --
