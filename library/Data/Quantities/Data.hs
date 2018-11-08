@@ -114,8 +114,23 @@ data QuantityError a = UndefinedUnitError String
                      | ScalingFactorError (Quantity a)
                        -- ^ Used when a scaling factor is present in a unit
                        -- conversion.
-                     deriving (Show, Eq)
+                     deriving (Eq)
 
+instance Show a => Show (QuantityError a) where
+  show e = case e of
+    UndefinedUnitError unit -> "Undefined unit " ++ unit
+    DimensionalityError u1 u2 ->
+      "Trying to convert between " ++ show u1 ++ " and " ++ show u2 ++
+        " which are of different dimensions"
+    UnitAlreadyDefinedError unit -> "Unit already defined " ++ unit
+    PrefixAlreadyDefinedError pfx ->
+      "Prefix alredy defined " ++ pfx
+    ParserError err -> "Parse error: " ++ err
+    DifferentDefinitionsError u1 u2 ->
+      "The units " ++ show u1 ++ " and " ++ show u2 ++
+        "come from different definitions and can't be used together"
+    ScalingFactorError x ->
+      "Unexpected scaling factor " ++ show x
 
 -- | Useful for monadic computations with 'QuantityError's. Some examples:
 --
@@ -152,9 +167,9 @@ reduceUnits' = removeZeros . reduceComp . sort
 -- | Removes units with powers of zero that are left over from other
 -- computations.
 removeZeros :: [SimpleUnit] -> [SimpleUnit]
-removeZeros [] = []
+removeZeros []                        = []
 removeZeros (SimpleUnit _ _ 0.0 : xs) = removeZeros xs
-removeZeros (x:xs) = x : removeZeros xs
+removeZeros (x:xs)                    = x : removeZeros xs
 
 -- | Negate the powers of a list of SimpleUnits.
 invertUnits :: [SimpleUnit] -> [SimpleUnit]
